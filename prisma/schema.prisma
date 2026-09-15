@@ -1,0 +1,424 @@
+// Schéma de données SiraLex
+// SQLite en développement pour fonctionner sans infrastructure externe.
+// Pour la production, remplacer le provider par "postgresql" et fournir DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Comptes et abonnements (section 4.7)
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ETUDIANT
+  ENSEIGNANT
+  PROFESSIONNEL
+  INSTITUTION
+  ADMIN
+}
+
+enum Niveau {
+  L1
+  L2
+  L3
+  M1
+  M2
+}
+
+enum Formule {
+  GRATUITE
+  LICENCE
+  MASTER
+  PROFESSIONNEL
+  INSTITUTIONNELLE
+}
+
+enum StatutAbonnement {
+  ACTIF
+  EN_ATTENTE
+  SUSPENDU
+  RESILIE
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  role          Role     @default(ETUDIANT)
+  niveau        Niveau?
+  matiere       String? // matière enseignée, pour les enseignants
+  universite    String?
+  verified      Boolean  @default(false) // profil professionnel/enseignant vérifié
+  createdAt     DateTime @default(now())
+
+  subscription       Subscription?
+  coursesAuthored     Course[]        @relation("CourseAuthor")
+  coursesValidated    Course[]        @relation("CourseValidator")
+  courseVersions      CourseVersion[]
+  progress            CourseProgress[]
+  examsAuthored       Exam[]          @relation("ExamAuthor")
+  examsValidated      Exam[]          @relation("ExamValidator")
+  submissions         ExamSubmission[] @relation("SubmissionStudent")
+  corrections         ExamSubmission[] @relation("SubmissionCorrector")
+  forumThreads        ForumThread[]
+  forumPosts          ForumPost[]
+  reportsFiled        Report[]        @relation("ReportReporter")
+  moderationActions   Report[]        @relation("ReportModerator")
+  careerOffersAuthored CareerOffer[]  @relation("OfferAuthor")
+  careerOffersValidated CareerOffer[] @relation("OfferValidator")
+  applications        Application[]
+  favorites           Favorite[]
+  alerts              Alert[]
+  institutionId       String?
+  institution         Institution?    @relation(fields: [institutionId], references: [id])
+}
+
+model Institution {
+  id            String   @id @default(cuid())
+  name          String
+  type          String // Université, Cabinet, Administration...
+  contactEmail  String
+  licenseSeats  Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  members       User[]
+}
+
+model Subscription {
+  id           String            @id @default(cuid())
+  userId       String            @unique
+  user         User              @relation(fields: [userId], references: [id])
+  plan         Formule           @default(GRATUITE)
+  status       StatutAbonnement  @default(ACTIF)
+  startedAt    DateTime          @default(now())
+  renewsAt     DateTime?
+  paymentMethod String? // MOBILE_MONEY | CARTE
+  payments     Payment[]
+}
+
+enum StatutPaiement {
+  REUSSI
+  ECHEC
+}
+
+model Payment {
+  id             String         @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription   @relation(fields: [subscriptionId], references: [id])
+  amount         Int // FCFA
+  method         String
+  status         StatutPaiement
+  createdAt      DateTime       @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Module Formation (section 4.1)
+// ---------------------------------------------------------------------------
+
+enum StatutContenu {
+  BROUILLON
+  EN_RELECTURE
+  PUBLIE
+}
+
+model Course {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @unique
+  niveau      Niveau
+  matiere     String
+  filiere     String?
+  universite  String?
+  summary     String
+  content     String // markdown
+  durationMin Int            @default(30)
+  status      StatutContenu  @default(BROUILLON)
+  authorId    String
+  author      User           @relation("CourseAuthor", fields: [authorId], references: [id])
+  validatorId String?
+  validator   User?          @relation("CourseValidator", fields: [validatorId], references: [id])
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  versions    CourseVersion[]
+  progress    CourseProgress[]
+}
+
+model CourseVersion {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  content   String
+  editedById String
+  editedBy  User     @relation(fields: [editedById], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum StatutProgression {
+  NON_COMMENCE
+  EN_COURS
+  TERMINE
+}
+
+model CourseProgress {
+  id           String            @id @default(cuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id])
+  courseId     String
+  course       Course            @relation(fields: [courseId], references: [id])
+  status       StatutProgression @default(NON_COMMENCE)
+  lastPosition Int               @default(0) // pourcentage de lecture
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+// ---------------------------------------------------------------------------
+// Module Examens et évaluations (section 4.2)
+// ---------------------------------------------------------------------------
+
+enum TypeEpreuve {
+  QCM
+  CAS_PRATIQUE
+  DISSERTATION
+  ANNALE
+}
+
+model Exam {
+  id           String        @id @default(cuid())
+  title        String
+  matiere      String
+  niveau       Niveau
+  type         TypeEpreuve
+  instructions String
+  documents    String? // pièces jointes (texte, jurisprudence) en description
+  durationMin  Int
+  bareme       String?
+  status       StatutContenu @default(BROUILLON)
+  authorId     String
+  author       User          @relation("ExamAuthor", fields: [authorId], references: [id])
+  validatorId  String?
+  validator    User?         @relation("ExamValidator", fields: [validatorId], references: [id])
+  openAt       DateTime?
+  closeAt      DateTime?
+  createdAt    DateTime      @default(now())
+
+  questions    ExamQuestion[]
+  submissions  ExamSubmission[]
+}
+
+model ExamQuestion {
+  id            String @id @default(cuid())
+  examId        String
+  exam          Exam   @relation(fields: [examId], references: [id])
+  question      String
+  options       String // JSON string array
+  correctIndex  Int
+  order         Int    @default(0)
+}
+
+enum StatutCopie {
+  EN_COURS
+  SOUMISE
+  CORRIGEE
+}
+
+model ExamSubmission {
+  id           String      @id @default(cuid())
+  examId       String
+  exam         Exam        @relation(fields: [examId], references: [id])
+  studentId    String
+  student      User        @relation("SubmissionStudent", fields: [studentId], references: [id])
+  startedAt    DateTime    @default(now())
+  submittedAt  DateTime?
+  answers      String? // JSON: réponses QCM {questionId: index}
+  essayContent String? // texte rédigé pour cas pratique / dissertation
+  autoScore    Float? // score QCM automatique
+  status       StatutCopie @default(EN_COURS)
+  correctorId  String?
+  corrector    User?       @relation("SubmissionCorrector", fields: [correctorId], references: [id])
+  correctedAt  DateTime?
+  note         Float?
+  annotations  String?
+
+  @@unique([examId, studentId])
+}
+
+// ---------------------------------------------------------------------------
+// Module Documentation juridique (section 4.3)
+// ---------------------------------------------------------------------------
+
+enum TypeTexte {
+  CONSTITUTION
+  CODE
+  LOI
+  DECRET
+  REGLEMENT_OHADA
+  ACTE_UNIFORME
+}
+
+model LegalText {
+  id            String    @id @default(cuid())
+  title         String
+  type          TypeTexte
+  matiere       String
+  juridiction   String // Sénégal, OHADA...
+  reference     String
+  datePublication DateTime
+  dateMajRecente  DateTime @updatedAt
+  content       String
+  fiable        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  favorites     Favorite[]
+  alerts        Alert[]
+}
+
+model Jurisprudence {
+  id          String   @id @default(cuid())
+  title       String
+  juridiction String
+  matiere     String
+  date        DateTime
+  keywords    String // mots-clés séparés par des virgules
+  summary     String
+  content     String
+  createdAt   DateTime @default(now())
+
+  favorites   Favorite[]
+}
+
+enum TypeCible {
+  TEXTE
+  JURISPRUDENCE
+  THEMATIQUE
+}
+
+model Favorite {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  legalTextId     String?
+  legalText       LegalText?     @relation(fields: [legalTextId], references: [id])
+  jurisprudenceId String?
+  jurisprudence   Jurisprudence? @relation(fields: [jurisprudenceId], references: [id])
+  createdAt       DateTime       @default(now())
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  cible       TypeCible
+  legalTextId String?
+  legalText   LegalText? @relation(fields: [legalTextId], references: [id])
+  thematique  String?
+  createdAt   DateTime  @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Module Communauté (section 4.5)
+// ---------------------------------------------------------------------------
+
+model ForumThread {
+  id        String      @id @default(cuid())
+  title     String
+  matiere   String?
+  promotion String?
+  authorId  String
+  author    User        @relation(fields: [authorId], references: [id])
+  createdAt DateTime    @default(now())
+
+  posts     ForumPost[]
+}
+
+model ForumPost {
+  id        String    @id @default(cuid())
+  threadId  String
+  thread    ForumThread @relation(fields: [threadId], references: [id])
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  content   String
+  removed   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  reports   Report[]
+}
+
+enum StatutSignalement {
+  OUVERT
+  TRAITE
+}
+
+model Report {
+  id          String            @id @default(cuid())
+  postId      String
+  post        ForumPost         @relation(fields: [postId], references: [id])
+  reporterId  String
+  reporter    User              @relation("ReportReporter", fields: [reporterId], references: [id])
+  reason      String
+  status      StatutSignalement @default(OUVERT)
+  moderatorId String?
+  moderator   User?             @relation("ReportModerator", fields: [moderatorId], references: [id])
+  createdAt   DateTime          @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Module Professionnalisation (section 4.6)
+// ---------------------------------------------------------------------------
+
+enum TypeOffre {
+  STAGE
+  EMPLOI
+  MENTORAT
+}
+
+enum StatutOffre {
+  EN_ATTENTE
+  VALIDEE
+  REJETEE
+}
+
+model CareerOffer {
+  id           String      @id @default(cuid())
+  title        String
+  type         TypeOffre
+  organisation String
+  description  String
+  status       StatutOffre @default(EN_ATTENTE)
+  authorId     String
+  author       User        @relation("OfferAuthor", fields: [authorId], references: [id])
+  validatorId  String?
+  validator    User?       @relation("OfferValidator", fields: [validatorId], references: [id])
+  createdAt    DateTime    @default(now())
+
+  applications Application[]
+}
+
+enum StatutCandidature {
+  ENVOYEE
+  VUE
+  ACCEPTEE
+  REJETEE
+}
+
+model Application {
+  id        String             @id @default(cuid())
+  offerId   String
+  offer     CareerOffer        @relation(fields: [offerId], references: [id])
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  message   String
+  status    StatutCandidature  @default(ENVOYEE)
+  createdAt DateTime           @default(now())
+
+  @@unique([offerId, userId])
+}

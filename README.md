@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SiraLex
 
-## Getting Started
+MVP fonctionnel de la plateforme SiraLex, construit à partir du cahier des
+charges (juillet 2026). Next.js 16 (App Router, Server Actions) + Prisma +
+SQLite + NextAuth.
 
-First, run the development server:
+## Démarrer
 
 ```bash
+npm install
+npx prisma db push      # crée la base SQLite locale (prisma/dev.db)
+npx tsx prisma/seed.ts  # données de démonstration
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Comptes de démonstration (mot de passe `demo1234`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Rôle | Email |
+|---|---|
+| Étudiant (L2) | `etudiant@siralex.sn` |
+| Enseignant | `enseignant@siralex.sn` |
+| Professionnel | `professionnel@siralex.sn` |
+| Administrateur | `admin@siralex.sn` |
 
-## Learn More
+## Ce qui est implémenté
 
-To learn more about Next.js, take a look at the following resources:
+Les cinq piliers du cahier des charges (section 4), avec circuits de
+validation par rôle :
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Formation** — catalogue filtrable, lecture de cours, suivi de
+  progression, accès gradué par formule (Licence/Master/Professionnel),
+  circuit enseignant → comité scientifique → publication, historique de
+  versions.
+- **Examens** — QCM chronométrés (correction et note automatiques),
+  cas pratiques/dissertations avec minuteur, enregistrement automatique
+  de la copie, soumission automatique à l'expiration du temps, interface
+  de correction manuelle avec annotations.
+- **Documentation juridique** — recherche de textes et de jurisprudence,
+  favoris, alertes de mise à jour, copie de référence, export PDF (impression).
+- **Communauté** — fils de discussion par matière/promotion, signalement
+  et modération.
+- **Professionnalisation** — offres de stage/emploi/mentorat avec
+  validation, candidatures.
+- **Comptes & abonnements** — formules Gratuite/Licence/Master/Professionnel,
+  changement de formule à tout moment, historique de paiement, suspension
+  en cas d'échec de paiement.
+- **Back-office admin** — validation des cours et épreuves, modération,
+  validation des offres, liste des utilisateurs, statistiques globales.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Ce qui est simulé ou hors périmètre de ce MVP
 
-## Deploy on Vercel
+Le cahier des charges couvre un produit complet (web + mobile natif,
+partenariats institutionnels, intégrations réelles). Dans cette première
+version :
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Paiement Mobile Money / carte** : simulé (`lib/actions/subscription.ts`).
+  Toute transaction réussit, sauf le code `0000` qui démontre le parcours
+  d'échec (suspension d'abonnement). Aucune intégration Orange Money / Wave /
+  carte bancaire réelle.
+- **Contenus juridiques** (Constitution, COCC, actes uniformes OHADA,
+  jurisprudence) : résumés illustratifs à but pédagogique, clairement
+  annotés comme tels — pas le texte officiel consolidé. À remplacer par un
+  sourcing réel (Journal officiel, CCJA, éditeurs juridiques) avant toute
+  mise en production.
+- **Application mobile native** : non développée. L'interface web est
+  responsive (mobile/tablette/desktop) mais il n'y a pas d'app iOS/Android
+  ni de mode hors-ligne.
+- **Recherche sémantique / assistant IA** (module Innovation, section 4.4) :
+  non implémenté — la recherche est un filtre/`contains` classique.
+- **SSO institutionnel, authentification réseaux sociaux** : seule
+  l'authentification email/mot de passe est en place.
+- **Télésurveillance des examens** : volontairement absente, comme
+  précisé au cahier des charges pour cette phase (outil formatif, non
+  certifiant).
+- **Base de données** : SQLite en local pour tourner sans dépendance
+  externe. Basculer sur PostgreSQL pour la production (`prisma/schema.prisma`,
+  `datasource db`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Structure
+
+```
+app/                 Routes (App Router) — pages publiques, espace étudiant,
+                      espace enseignant (/enseignant), back-office (/admin)
+lib/actions/          Server Actions par domaine (cours, examens, communauté,
+                      carrières, abonnement, documentation, auth)
+lib/access.ts         Formules d'abonnement et règles d'accès par niveau
+prisma/schema.prisma  Modèle de données complet
+prisma/seed.ts        Jeu de données de démonstration
+```

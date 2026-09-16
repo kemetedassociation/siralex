@@ -2,14 +2,22 @@
 
 MVP fonctionnel de la plateforme SiraLex, construit à partir du cahier des
 charges (juillet 2026). Next.js 16 (App Router, Server Actions) + Prisma +
-SQLite + NextAuth.
+PostgreSQL (Neon) + NextAuth.
 
-## Démarrer
+**Démo en ligne :** https://siralex-iota.vercel.app
+**Dépôt :** https://github.com/kemetedassociation/siralex
+
+## Démarrer en local
+
+Nécessite une base PostgreSQL (le plus simple : réutiliser la base Neon du
+projet Vercel via `vercel env pull`, ou en créer une autre gratuite sur
+[neon.tech](https://neon.tech)).
 
 ```bash
 npm install
-npx prisma db push      # crée la base SQLite locale (prisma/dev.db)
-npx tsx prisma/seed.ts  # données de démonstration
+cp .env.example .env     # puis renseigner DATABASE_URL / DATABASE_URL_UNPOOLED
+npx prisma db push       # synchronise le schéma
+npx tsx prisma/seed.ts   # données de démonstration
 npm run dev
 ```
 

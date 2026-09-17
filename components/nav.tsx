@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { UserMenu } from "@/components/user-menu";
 import { MobileMenu } from "@/components/mobile-menu";
+import { InstallAppButton } from "@/components/install-app-button";
 
 const PUBLIC_LINKS = [
   { href: "/formation", label: "Formation" },
@@ -46,6 +47,7 @@ export async function Nav() {
         </nav>
 
         <div className="flex items-center gap-2 text-sm">
+          <InstallAppButton />
           {user ? (
             <UserMenu user={user} />
           ) : (

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { InstallAppMenuItem } from "@/components/install-app-button";
 
 type LinkItem = { href: string; label: string };
 type User = { name?: string | null; role: string } | null;
@@ -56,6 +57,7 @@ export function MobileMenu({
             </Link>
           )}
           <div className="my-1 border-t border-white/15" />
+          <InstallAppMenuItem />
           {user ? (
             <>
               <Link href="/tableau-de-bord" className="rounded px-2 py-2 transition-colors hover:bg-white/10">

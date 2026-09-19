@@ -3,6 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { TEXT_TYPE_LABELS } from "@/lib/labels";
 
+const MATIERE_ORDER = [
+  "Droit civil et des affaires",
+  "Droit pénal",
+  "Droit social",
+  "Fiscalité et affaires",
+  "Droit public et administratif",
+  "Droit OHADA",
+];
+
 export default async function DocumentationPage({
   searchParams,
 }: {
@@ -19,10 +28,23 @@ export default async function DocumentationPage({
             ...(matiere ? { matiere } : {}),
             ...(q ? { OR: [{ title: { contains: q } }, { content: { contains: q } }] } : {}),
           },
-          orderBy: { dateMajRecente: "desc" },
+          orderBy: [{ matiere: "asc" }, { datePublication: "asc" }],
           include: { favorites: session?.user ? { where: { userId: session.user.id } } : false },
         })
       : [];
+
+  const isFiltered = Boolean(q || type || matiere);
+  const groupedTexts = isFiltered
+    ? null
+    : MATIERE_ORDER.map((m) => ({ matiere: m, items: texts.filter((t) => t.matiere === m) }))
+        .filter((g) => g.items.length > 0)
+        .concat(
+          (() => {
+            const known = new Set(MATIERE_ORDER);
+            const rest = texts.filter((t) => !known.has(t.matiere));
+            return rest.length > 0 ? [{ matiere: "Autres", items: rest }] : [];
+          })()
+        );
 
   const decisions =
     onglet === "jurisprudence"
@@ -89,31 +111,25 @@ export default async function DocumentationPage({
         </button>
       </form>
 
-      <div className="mt-8 space-y-3">
+      <div className="mt-8 space-y-8">
+        {onglet !== "jurisprudence" && groupedTexts && (
+          <>
+            {groupedTexts.map((group) => (
+              <section key={group.matiere}>
+                <h2 className="font-serif text-lg font-semibold text-brand-dark">{group.matiere}</h2>
+                <div className="mt-3 space-y-3">
+                  {group.items.map((t) => (
+                    <TextCard key={t.id} t={t} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </>
+        )}
+
         {onglet !== "jurisprudence" &&
-          texts.map((t) => (
-            <Link
-              key={t.id}
-              href={`/documentation/textes/${t.id}`}
-              className="card-lift block rounded-lg border border-black/10 bg-white p-4 hover:border-brand"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-brand">{TEXT_TYPE_LABELS[t.type]}</span>
-                <span className="text-xs text-foreground/50">
-                  Mis à jour le {t.dateMajRecente.toLocaleDateString("fr-FR")}
-                </span>
-              </div>
-              <h3 className="mt-1 font-semibold text-brand-dark">{t.title}</h3>
-              <p className="mt-1 text-sm text-foreground/60">
-                {t.matiere} · {t.juridiction} · réf. {t.reference}
-              </p>
-              {t.fiable && (
-                <span className="mt-2 inline-block rounded bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-                  Contenu validé
-                </span>
-              )}
-            </Link>
-          ))}
+          !groupedTexts &&
+          texts.map((t) => <TextCard key={t.id} t={t} />)}
 
         {onglet === "jurisprudence" &&
           decisions.map((d) => (
@@ -140,5 +156,32 @@ export default async function DocumentationPage({
         )}
       </div>
     </div>
+  );
+}
+
+type LegalTextRow = Awaited<ReturnType<typeof prisma.legalText.findMany>>[number];
+
+function TextCard({ t }: { t: LegalTextRow }) {
+  return (
+    <Link
+      href={`/documentation/textes/${t.id}`}
+      className="card-lift block rounded-lg border border-black/10 bg-white p-4 hover:border-brand"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-brand">{TEXT_TYPE_LABELS[t.type]}</span>
+        <span className="text-xs text-foreground/50">
+          Mis à jour le {t.dateMajRecente.toLocaleDateString("fr-FR")}
+        </span>
+      </div>
+      <h3 className="mt-1 font-semibold text-brand-dark">{t.title}</h3>
+      <p className="mt-1 text-sm text-foreground/60">
+        {t.matiere} · {t.juridiction} · réf. {t.reference}
+      </p>
+      {t.fiable && (
+        <span className="mt-2 inline-block rounded bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+          Contenu validé
+        </span>
+      )}
+    </Link>
   );
 }

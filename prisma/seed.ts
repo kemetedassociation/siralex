@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import fs from "node:fs";
+import path from "node:path";
 
 const prisma = new PrismaClient();
 
@@ -146,66 +148,27 @@ async function main() {
   // Documentation juridique
   // ---------------------------------------------------------------------
 
-  const textsData = [
-    {
-      title: "Constitution du Sénégal",
-      type: "CONSTITUTION" as const,
-      matiere: "Droit constitutionnel",
-      juridiction: "Sénégal",
-      reference: "Constitution du 22 janvier 2001 (révisée)",
-      datePublication: new Date("2001-01-22"),
-      content:
-        "Résumé illustratif : la Constitution sénégalaise organise la séparation des pouvoirs entre l'exécutif, le législatif et le judiciaire, garantit les droits et libertés fondamentaux, et fixe les règles relatives à l'élection du Président de la République et de l'Assemblée nationale. Contenu fourni à titre d'exemple pédagogique — se référer au Journal officiel pour le texte consolidé.",
-    },
-    {
-      title: "Code des obligations civiles et commerciales (COCC)",
-      type: "CODE" as const,
-      matiere: "Droit des obligations",
-      juridiction: "Sénégal",
-      reference: "Loi n°63-62 du 10 juillet 1963",
-      datePublication: new Date("1963-07-10"),
-      content:
-        "Résumé illustratif : le COCC régit la formation, l'exécution et l'extinction des obligations contractuelles et délictuelles au Sénégal, ainsi que le régime général des contrats spéciaux (vente, bail, mandat). Contenu fourni à titre d'exemple pédagogique.",
-    },
-    {
-      title: "Acte uniforme relatif au droit commercial général",
-      type: "ACTE_UNIFORME" as const,
-      matiere: "Droit OHADA",
-      juridiction: "OHADA",
-      reference: "Acte uniforme révisé du 15 décembre 2010",
-      datePublication: new Date("2010-12-15"),
-      content:
-        "Résumé illustratif : cet acte uniforme fixe le statut du commerçant, les règles relatives au Registre du Commerce et du Crédit Mobilier (RCCM), au bail commercial et au fonds de commerce dans les États membres de l'OHADA. Contenu fourni à titre d'exemple pédagogique.",
-    },
-    {
-      title: "Acte uniforme relatif au droit des sociétés commerciales et du GIE",
-      type: "ACTE_UNIFORME" as const,
-      matiere: "Droit OHADA",
-      juridiction: "OHADA",
-      reference: "Acte uniforme révisé du 30 janvier 2014",
-      datePublication: new Date("2014-01-30"),
-      content:
-        "Résumé illustratif : cet acte uniforme organise la constitution, le fonctionnement et la dissolution des sociétés commerciales et des groupements d'intérêt économique dans l'espace OHADA, y compris la société par actions simplifiée (SAS). Contenu fourni à titre d'exemple pédagogique.",
-    },
-    {
-      title: "Loi sur la protection des données à caractère personnel",
-      type: "LOI" as const,
-      matiere: "Droit du numérique",
-      juridiction: "Sénégal",
-      reference: "Loi n°2008-12 du 25 janvier 2008",
-      datePublication: new Date("2008-01-25"),
-      content:
-        "Résumé illustratif : cette loi encadre la collecte, le traitement et la conservation des données à caractère personnel au Sénégal et institue la Commission de protection des données personnelles (CDP). Contenu fourni à titre d'exemple pédagogique.",
-    },
-  ];
-
+  // Corpus réel (Constitution, codes sénégalais, actes uniformes OHADA) extrait
+  // des textes officiels fournis dans prisma/legal-texts/. Voir README pour la
+  // liste des textes non disponibles (source manquante ou PDF scanné).
+  const legalTextsDir = path.join(__dirname, "legal-texts");
   const legalTexts = [];
-  for (const t of textsData) {
+  for (const file of fs.readdirSync(legalTextsDir).sort()) {
+    if (!file.endsWith(".json")) continue;
+    const t = JSON.parse(fs.readFileSync(path.join(legalTextsDir, file), "utf-8"));
     const existing = await prisma.legalText.findFirst({ where: { title: t.title } });
     legalTexts.push(
       existing ??
         (await prisma.legalText.create({
-          data: t,
+          data: {
+            title: t.title,
+            type: t.type,
+            matiere: t.matiere,
+            juridiction: t.juridiction,
+            reference: t.reference,
+            datePublication: new Date(t.datePublication),
+            content: t.content,
+          },
         }))
     );
   }

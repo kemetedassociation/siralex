@@ -46,3 +46,7 @@ next-env.d.ts
 
 # local sqlite (legacy dev database, project now uses Postgres)
 *.db
+
+# Sources PDF brutes des textes juridiques (volumineuses, non nécessaires au
+# runtime — le contenu extrait et nettoyé vit dans prisma/legal-texts/*.json).
+/Siri docs/

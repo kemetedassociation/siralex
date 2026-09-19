@@ -67,11 +67,9 @@ version :
   Toute transaction réussit, sauf le code `0000` qui démontre le parcours
   d'échec (suspension d'abonnement). Aucune intégration Orange Money / Wave /
   carte bancaire réelle.
-- **Contenus juridiques** (Constitution, COCC, actes uniformes OHADA,
-  jurisprudence) : résumés illustratifs à but pédagogique, clairement
-  annotés comme tels — pas le texte officiel consolidé. À remplacer par un
-  sourcing réel (Journal officiel, CCJA, éditeurs juridiques) avant toute
-  mise en production.
+- **Contenus juridiques** : 18 textes réels intégralement chargés (voir
+  ci-dessous « Corpus juridique ») ; seule la jurisprudence reste illustrative
+  (aucune vraie décision fournie).
 - **Application mobile native** : non développée. L'interface web est
   responsive (mobile/tablette/desktop) mais il n'y a pas d'app iOS/Android
   ni de mode hors-ligne.
@@ -82,9 +80,35 @@ version :
 - **Télésurveillance des examens** : volontairement absente, comme
   précisé au cahier des charges pour cette phase (outil formatif, non
   certifiant).
-- **Base de données** : SQLite en local pour tourner sans dépendance
-  externe. Basculer sur PostgreSQL pour la production (`prisma/schema.prisma`,
-  `datasource db`).
+## Corpus juridique
+
+`prisma/legal-texts/*.json` contient le texte intégral, extrait et nettoyé,
+de 18 textes officiels (chargés par `prisma/seed.ts`) :
+
+- **Sénégal** — COCC, Code de la famille, Code de procédure civile, Code de
+  procédure pénale, Code du travail, Code des douanes, Code des
+  investissements, Constitution, Code général des collectivités
+  territoriales.
+- **OHADA** — 9 actes uniformes (droit commercial général, sociétés
+  commerciales et GIE, sûretés, procédures collectives, droit comptable,
+  transport de marchandises par route, arbitrage, médiation, sociétés
+  coopératives).
+
+Textes demandés mais **non disponibles** dans les sources fournies — à
+réinsérer dès qu'une meilleure source existe (`prisma/legal-texts/`, même
+format JSON) :
+
+| Texte | Raison |
+|---|---|
+| Code pénal | Seul un PDF d'amendement (loi n°2016-29) était fourni, et il est scanné (image), sans texte extractible |
+| Code de la sécurité sociale | PDF avec police sans table d'encodage — extraction illisible même avec plusieurs outils |
+| Code général des Impôts | Même problème d'encodage |
+| Code électoral | PDF entièrement scanné (176 pages), nécessite une OCR non réalisée ici |
+| Code des marchés publics | Aucun fichier fourni |
+| Acte uniforme OHADA — procédures simplifiées de recouvrement (AUPSRVE) | PDF scanné (images), texte non extractible |
+
+Les fichiers PDF sources (dossier `Siri docs/`) ne sont pas versionnés
+(volumineux, non nécessaires au runtime une fois le contenu importé en base).
 
 ## Structure
 
@@ -95,5 +119,6 @@ lib/actions/          Server Actions par domaine (cours, examens, communauté,
                       carrières, abonnement, documentation, auth)
 lib/access.ts         Formules d'abonnement et règles d'accès par niveau
 prisma/schema.prisma  Modèle de données complet
-prisma/seed.ts        Jeu de données de démonstration
+prisma/seed.ts        Comptes de démo, cours, examens, corpus juridique réel
+prisma/legal-texts/   Textes juridiques réels (JSON), chargés par seed.ts
 ```

@@ -1,10 +1,16 @@
-// Détection des titres structurels (Partie/Livre/Titre/Chapitre/Section) dans
-// le texte intégral d'un texte juridique, pour générer un sommaire cliquable
-// avec ancres. Les textes stockés isolent déjà ces lignes (voir le script
-// d'extraction), donc une détection ligne par ligne suffit — pas besoin de
-// parser le sommaire imprimé lui-même, qui reste affiché tel quel plus haut.
+// Analyse du texte intégral d'un texte juridique (déjà segmenté en alinéas
+// par l'extraction — un bloc PDF = un paragraphe) pour :
+//  1. détecter les titres structurels (Partie/Livre/Titre/Chapitre/Section)
+//     et leur donner une ancre, pour un sommaire cliquable ;
+//  2. détecter le début de chaque article et numéroter ses alinéas, pour un
+//     rendu clair (article en gras, alinéas légendés en italique).
 
-export type Heading = { id: string; level: number; label: string; index: number };
+export type Heading = { id: string; level: number; label: string };
+
+export type RenderBlock =
+  | { type: "heading"; id: string; level: number; text: string }
+  | { type: "article"; id: string; label: string; alineas: string[] }
+  | { type: "prose"; text: string };
 
 const HEADING_PATTERNS: { re: RegExp; level: number }[] = [
   { re: /^(PARTIE|LIVRE)\b/i, level: 1 },
@@ -13,15 +19,8 @@ const HEADING_PATTERNS: { re: RegExp; level: number }[] = [
   { re: /^SECTION\b/i, level: 4 },
 ];
 
-// Fenêtre (en lignes) dans laquelle on cherche un sommaire imprimé à ignorer
-// pour la détection des titres (évite les doublons avec le corps du texte).
-const TOC_SEARCH_WINDOW = 500;
-const DOTTED_LEADER = /\.{4,}\s*\d{1,4}\s*$/;
-
-// Un mot comme "titre" ou "partie" apparaît aussi en prose ("à quel titre...").
-// On ne retient la ligne comme titre structurel que si le mot-clé est suivi
-// d'une numérotation, ou si la ligne est très majoritairement en majuscules.
-const NUMBERING_AFTER_KEYWORD = /^\S+\s+([IVXLCDM]+\b|\d+\b|PREMI[EÈ]RE?\b|DEUXI[EÈ]ME\b|TROISI[EÈ]ME\b|QUATRI[EÈ]ME\b|PRELIMINAIRE\b)/i;
+const NUMBERING_AFTER_KEYWORD =
+  /^\S+\s+([IVXLCDM]+\b|\d+\b|PREMI[EÈ]RE?\b|DEUXI[EÈ]ME\b|TROISI[EÈ]ME\b|QUATRI[EÈ]ME\b|PR[EÉ]LIMINAIRE\b)/i;
 
 function isMostlyUpper(s: string): boolean {
   const letters = s.replace(/[^a-zA-ZÀ-ÿ]/g, "");
@@ -29,6 +28,27 @@ function isMostlyUpper(s: string): boolean {
   const upper = letters.replace(/[^A-ZÀ-Þ]/g, "");
   return upper.length / letters.length > 0.7;
 }
+
+function matchHeading(paragraph: string): { level: number } | null {
+  const firstLine = paragraph.split("\n")[0].trim();
+  if (!firstLine || firstLine.length > 140) return null;
+  for (const { re, level } of HEADING_PATTERNS) {
+    if (re.test(firstLine) && (NUMBERING_AFTER_KEYWORD.test(firstLine) || isMostlyUpper(firstLine))) {
+      return { level };
+    }
+  }
+  return null;
+}
+
+// "Article 22", "Article premier", "Article L.55.-", "Article L. 243",
+// "Art.153.-", "Article 8-1"...
+const ARTICLE_START =
+  /^(?:Article|Art\.)\s*((?:[A-Za-zÀ-ÿ]+\.?\s*)?\d+(?:[.\-]\d+)?|premier|préliminaire)\.?-?\s*/i;
+
+// Un sommaire imprimé regroupe plusieurs entrées "........ N" ; on ignore les
+// paragraphes qui en contiennent pour ne pas les détecter comme titres réels.
+const DOTTED_LEADER_COUNT = (s: string) => (s.match(/\.{4,}\s*\d{1,4}/g) ?? []).length;
+const TOC_SEARCH_WINDOW = 60;
 
 function slugify(label: string, index: number): string {
   const base = label
@@ -41,52 +61,84 @@ function slugify(label: string, index: number): string {
   return `${base || "section"}-${index}`;
 }
 
-export function extractHeadings(content: string): Heading[] {
-  const lines = content.split("\n");
-  const window = Math.min(lines.length, TOC_SEARCH_WINDOW);
+export function parseLegalContent(content: string): RenderBlock[] {
+  const paragraphs = content.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
-  let bodyStartLine = 0;
+  let bodyStart = 0;
+  const window = Math.min(paragraphs.length, TOC_SEARCH_WINDOW);
   for (let i = 0; i < window; i++) {
-    if (DOTTED_LEADER.test(lines[i])) bodyStartLine = i + 1;
+    if (DOTTED_LEADER_COUNT(paragraphs[i]) >= 1) bodyStart = i + 1;
   }
 
-  const lineStarts: number[] = [];
-  let cursor = 0;
-  for (const line of lines) {
-    lineStarts.push(cursor);
-    cursor += line.length + 1;
-  }
+  const blocks: RenderBlock[] = [];
+  let idCounter = 0;
+  let currentArticle: { id: string; label: string; alineas: string[] } | null = null;
 
-  const headings: Heading[] = [];
-  lines.forEach((line, i) => {
-    if (i < bodyStartLine) return;
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.length > 140) return;
-    for (const { re, level } of HEADING_PATTERNS) {
-      if (re.test(trimmed) && (NUMBERING_AFTER_KEYWORD.test(trimmed) || isMostlyUpper(trimmed))) {
-        headings.push({ id: slugify(trimmed, headings.length), level, label: trimmed, index: lineStarts[i] });
-        break;
-      }
+  const flushArticle = () => {
+    if (currentArticle) {
+      blocks.push({ type: "article", ...currentArticle });
+      currentArticle = null;
     }
-  });
+  };
 
-  return headings;
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = paragraphs[i];
+
+    if (i < bodyStart) {
+      // Sommaire imprimé / page de garde : affiché tel quel, hors structure.
+      flushArticle();
+      blocks.push({ type: "prose", text: paragraph });
+      continue;
+    }
+
+    const heading = matchHeading(paragraph);
+    if (heading) {
+      flushArticle();
+      let text = paragraph;
+      // Un titre court est parfois coupé de son intitulé, réparti sur
+      // plusieurs blocs PDF successifs (ex. "SECTION PREMIÈRE -" / "DES
+      // ACTES" / "DE L'ETAT CIVIL"). On les rattache tant qu'ils ont l'air
+      // de continuer le même titre (courts, en majuscules).
+      let merges = 0;
+      while (
+        text.length < 60 &&
+        merges < 3 &&
+        i + 1 < paragraphs.length &&
+        !matchHeading(paragraphs[i + 1]) &&
+        !ARTICLE_START.test(paragraphs[i + 1]) &&
+        isMostlyUpper(paragraphs[i + 1].split("\n")[0]) &&
+        paragraphs[i + 1].length < 80
+      ) {
+        i++;
+        merges++;
+        text = `${text} ${paragraphs[i]}`.trim();
+      }
+      blocks.push({ type: "heading", id: slugify(text.split("\n")[0], idCounter++), level: heading.level, text });
+      continue;
+    }
+
+    const articleMatch = paragraph.match(ARTICLE_START);
+    if (articleMatch) {
+      flushArticle();
+      const label = `Article ${articleMatch[1].trim().replace(/\.$/, "")}`;
+      const rest = paragraph.slice(articleMatch[0].length).trim();
+      currentArticle = { id: `article-${slugify(label, idCounter++)}`, label, alineas: rest ? [rest] : [] };
+      continue;
+    }
+
+    if (currentArticle) {
+      currentArticle.alineas.push(paragraph);
+    } else {
+      blocks.push({ type: "prose", text: paragraph });
+    }
+  }
+  flushArticle();
+
+  return blocks;
 }
 
-export type ContentSegment =
-  | { type: "text"; text: string }
-  | { type: "heading"; text: string; id: string; level: number };
-
-export function segmentContent(content: string, headings: Heading[]): ContentSegment[] {
-  const segments: ContentSegment[] = [];
-  let pos = 0;
-  for (const h of headings) {
-    if (h.index > pos) segments.push({ type: "text", text: content.slice(pos, h.index) });
-    const nl = content.indexOf("\n", h.index);
-    const end = nl === -1 ? content.length : nl;
-    segments.push({ type: "heading", text: content.slice(h.index, end), id: h.id, level: h.level });
-    pos = end;
-  }
-  if (pos < content.length) segments.push({ type: "text", text: content.slice(pos) });
-  return segments;
+export function getHeadings(blocks: RenderBlock[]): Heading[] {
+  return blocks
+    .filter((b): b is Extract<RenderBlock, { type: "heading" }> => b.type === "heading")
+    .map((b) => ({ id: b.id, level: b.level, label: b.text.split("\n")[0] }));
 }

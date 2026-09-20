@@ -121,7 +121,12 @@ app/                 Routes (App Router) — pages publiques, espace étudiant,
 lib/actions/          Server Actions par domaine (cours, examens, communauté,
                       carrières, abonnement, documentation, auth)
 lib/access.ts         Formules d'abonnement et règles d'accès par niveau
+lib/legal-structure.ts Détection Titre/Chapitre/Section/Article dans un texte,
+                      pour le sommaire cliquable et l'affichage par alinéas
 prisma/schema.prisma  Modèle de données complet
 prisma/seed.ts        Comptes de démo, cours, examens, corpus juridique réel
 prisma/legal-texts/   Textes juridiques réels (JSON), chargés par seed.ts
+prisma/update-legal-texts.ts  Ré-applique le contenu de legal-texts/ sur des
+                      textes déjà en base (mise à jour de contenu existant,
+                      contrairement à seed.ts qui ne crée que le manquant)
 ```

@@ -6,7 +6,7 @@ import { TEXT_TYPE_LABELS } from "@/lib/labels";
 import { toggleFavoriteText, subscribeAlert } from "@/lib/actions/documentation";
 import { createNote, deleteNote } from "@/lib/actions/notes";
 import { CopyReferenceButton } from "@/components/copy-reference-button";
-import { extractHeadings, segmentContent } from "@/lib/legal-structure";
+import { parseLegalContent, getHeadings } from "@/lib/legal-structure";
 
 const HEADING_TAG = ["h2", "h2", "h3", "h4", "h5"] as const;
 const HEADING_CLASS = [
@@ -37,8 +37,8 @@ export default async function LegalTextPage({ params }: { params: Promise<{ id: 
 
   const reference = `${text.title}, ${TEXT_TYPE_LABELS[text.type]}, ${text.juridiction}, réf. ${text.reference} (mis à jour le ${text.dateMajRecente.toLocaleDateString("fr-FR")})`;
 
-  const headings = extractHeadings(text.content);
-  const segments = segmentContent(text.content, headings);
+  const blocks = parseLegalContent(text.content);
+  const headings = getHeadings(blocks);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -143,22 +143,34 @@ export default async function LegalTextPage({ params }: { params: Promise<{ id: 
           )}
 
           <article className="prose-course mt-8 max-w-none text-foreground/90">
-            {segments.map((seg, i) =>
-              seg.type === "heading" ? (
-                (() => {
-                  const Tag = HEADING_TAG[seg.level] ?? "h2";
-                  return (
-                    <Tag key={i} id={seg.id} className={`scroll-mt-6 ${HEADING_CLASS[seg.level] ?? ""}`}>
-                      {seg.text}
-                    </Tag>
-                  );
-                })()
-              ) : (
-                <div key={i} className="whitespace-pre-line">
-                  {seg.text}
-                </div>
-              )
-            )}
+            {blocks.map((b, i) => {
+              if (b.type === "heading") {
+                const Tag = HEADING_TAG[b.level] ?? "h2";
+                return (
+                  <Tag key={i} id={b.id} className={`scroll-mt-6 ${HEADING_CLASS[b.level] ?? ""}`}>
+                    {b.text}
+                  </Tag>
+                );
+              }
+              if (b.type === "article") {
+                return (
+                  <div key={i} id={b.id} className="scroll-mt-6 mt-6">
+                    <p className="font-semibold text-brand-dark">{b.label}</p>
+                    {b.alineas.map((a, j) => (
+                      <p key={j} className="mt-2 leading-relaxed">
+                        <em className="mr-1.5 text-sm text-gold">Alinéa {j + 1}.</em>
+                        {a}
+                      </p>
+                    ))}
+                  </div>
+                );
+              }
+              return (
+                <p key={i} className="mt-3 whitespace-pre-line">
+                  {b.text}
+                </p>
+              );
+            })}
           </article>
         </div>
       </div>

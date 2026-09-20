@@ -76,6 +76,7 @@ model User {
   applications        Application[]
   favorites           Favorite[]
   alerts              Alert[]
+  notes               Note[]
   institutionId       String?
   institution         Institution?    @relation(fields: [institutionId], references: [id])
 }
@@ -280,6 +281,7 @@ model LegalText {
 
   favorites     Favorite[]
   alerts        Alert[]
+  notes         Note[]
 }
 
 model Jurisprudence {
@@ -322,6 +324,18 @@ model Alert {
   legalText   LegalText? @relation(fields: [legalTextId], references: [id])
   thematique  String?
   createdAt   DateTime  @default(now())
+}
+
+// Notes personnelles ("pense-bête") prises par un utilisateur sur un texte.
+model Note {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  legalTextId String
+  legalText   LegalText @relation(fields: [legalTextId], references: [id])
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 // ---------------------------------------------------------------------------

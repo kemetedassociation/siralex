@@ -43,12 +43,24 @@ function matchHeading(paragraph: string): { level: number } | null {
 // "Article 22", "Article premier", "Article L.55.-", "Article L. 243",
 // "Art.153.-", "Article 8-1"...
 const ARTICLE_START =
-  /^(?:Article|Art\.)\s*((?:[A-Za-zÀ-ÿ]+\.?\s*)?\d+(?:[.\-]\d+)?|premier|préliminaire)\.?-?\s*/i;
+  /^(?:Article|Art\.)\s*((?:[A-Za-zÀ-ÿ]+\.?\s*)?\d+(?:[.\-]\d+)*|premier|préliminaire)\.?-?\s*/i;
 
 // Un sommaire imprimé regroupe plusieurs entrées "........ N" ; on ignore les
 // paragraphes qui en contiennent pour ne pas les détecter comme titres réels.
 const DOTTED_LEADER_COUNT = (s: string) => (s.match(/\.{4,}\s*\d{1,4}/g) ?? []).length;
 const TOC_SEARCH_WINDOW = 60;
+
+// Le premier "alinéa" d'un article est parfois en réalité son intitulé
+// (ex. "ARTICLE 3 Classification" suivi, dans un bloc PDF séparé, du
+// vrai texte). On le distingue d'un véritable alinéa court : un intitulé
+// est bref, ne se termine pas par une ponctuation de fin de phrase, et
+// est suivi d'un contenu réel (pas d'un autre article/titre).
+function looksLikeArticleTitle(rest: string): boolean {
+  if (!rest || rest.length > 90) return false;
+  if (/[.;:!?]\s*$/.test(rest)) return false;
+  if (rest.split(/\s+/).length > 12) return false;
+  return true;
+}
 
 function slugify(label: string, index: number): string {
   const base = label
@@ -120,9 +132,19 @@ export function parseLegalContent(content: string): RenderBlock[] {
     const articleMatch = paragraph.match(ARTICLE_START);
     if (articleMatch) {
       flushArticle();
-      const label = `Article ${articleMatch[1].trim().replace(/\.$/, "")}`;
+      let label = `Article ${articleMatch[1].trim().replace(/\.$/, "")}`;
       const rest = paragraph.slice(articleMatch[0].length).trim();
-      currentArticle = { id: `article-${slugify(label, idCounter++)}`, label, alineas: rest ? [rest] : [] };
+      const nextParagraph = paragraphs[i + 1];
+      const hasFollowingContent =
+        !!nextParagraph && !ARTICLE_START.test(nextParagraph) && !matchHeading(nextParagraph);
+      let alineas: string[];
+      if (rest && looksLikeArticleTitle(rest) && hasFollowingContent) {
+        label = `${label} — ${rest}`;
+        alineas = [];
+      } else {
+        alineas = rest ? [rest] : [];
+      }
+      currentArticle = { id: `article-${slugify(label, idCounter++)}`, label, alineas };
       continue;
     }
 

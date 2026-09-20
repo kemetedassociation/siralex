@@ -17,6 +17,7 @@ async function main() {
         data: {
           content: t.content,
           reference: t.reference,
+          sourcePdfUrl: t.sourcePdfUrl ?? null,
           ...(t.fiable === false ? { fiable: false } : { fiable: true }),
         },
       });
@@ -31,6 +32,7 @@ async function main() {
           reference: t.reference,
           datePublication: new Date(t.datePublication),
           content: t.content,
+          sourcePdfUrl: t.sourcePdfUrl ?? null,
           ...(t.fiable === false ? { fiable: false } : {}),
         },
       });

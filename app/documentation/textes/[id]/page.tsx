@@ -17,10 +17,19 @@ const HEADING_CLASS = [
   "mt-4 font-medium text-brand-dark",
 ];
 
-export default async function LegalTextPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function LegalTextPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ vue?: string }>;
+}) {
   const { id } = await params;
+  const { vue } = await searchParams;
   const text = await prisma.legalText.findUnique({ where: { id } });
   if (!text) notFound();
+
+  const pdfMode = vue === "pdf" && !!text.sourcePdfUrl;
 
   const session = await getSession();
   let isFavorite = false;
@@ -37,8 +46,8 @@ export default async function LegalTextPage({ params }: { params: Promise<{ id: 
 
   const reference = `${text.title}, ${TEXT_TYPE_LABELS[text.type]}, ${text.juridiction}, réf. ${text.reference} (mis à jour le ${text.dateMajRecente.toLocaleDateString("fr-FR")})`;
 
-  const blocks = parseLegalContent(text.content);
-  const headings = getHeadings(blocks);
+  const blocks = pdfMode ? [] : parseLegalContent(text.content);
+  const headings = pdfMode ? [] : getHeadings(blocks);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -48,7 +57,7 @@ export default async function LegalTextPage({ params }: { params: Promise<{ id: 
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[260px_1fr]">
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          {headings.length > 0 && (
+          {!pdfMode && headings.length > 0 && (
             <div className="rounded-lg border border-black/10 bg-white p-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-foreground/50">Sommaire</p>
               <nav className="mt-2 max-h-[60vh] overflow-y-auto text-sm">
@@ -142,36 +151,73 @@ export default async function LegalTextPage({ params }: { params: Promise<{ id: 
             </div>
           )}
 
-          <article className="prose-course mt-8 max-w-none text-foreground/90">
-            {blocks.map((b, i) => {
-              if (b.type === "heading") {
-                const Tag = HEADING_TAG[b.level] ?? "h2";
-                return (
-                  <Tag key={i} id={b.id} className={`scroll-mt-6 ${HEADING_CLASS[b.level] ?? ""}`}>
-                    {b.text}
-                  </Tag>
-                );
-              }
-              if (b.type === "article") {
-                return (
-                  <div key={i} id={b.id} className="scroll-mt-6 mt-6">
-                    <p className="font-semibold text-brand-dark">{b.label}</p>
-                    {b.alineas.map((a, j) => (
-                      <p key={j} className="mt-2 leading-relaxed">
-                        <em className="mr-1.5 text-sm text-gold">Alinéa {j + 1}.</em>
-                        {a}
-                      </p>
-                    ))}
-                  </div>
-                );
-              }
-              return (
-                <p key={i} className="mt-3 whitespace-pre-line">
-                  {b.text}
+          {text.sourcePdfUrl && (
+            <div className="mt-6 flex gap-2 text-sm">
+              <Link
+                href={`/documentation/textes/${id}`}
+                className={`rounded px-3 py-1.5 ${!pdfMode ? "bg-brand text-white" : "border border-black/10 bg-white text-foreground/70"}`}
+              >
+                Lecture structurée
+              </Link>
+              <Link
+                href={`/documentation/textes/${id}?vue=pdf`}
+                className={`rounded px-3 py-1.5 ${pdfMode ? "bg-brand text-white" : "border border-black/10 bg-white text-foreground/70"}`}
+              >
+                PDF original
+              </Link>
+            </div>
+          )}
+
+          {pdfMode ? (
+            <div className="mt-8 flex flex-col items-center gap-4 rounded-lg border border-black/10 bg-white px-6 py-16 text-center">
+              <span className="text-4xl">📄</span>
+              <div>
+                <p className="font-medium text-brand-dark">Document PDF non modifié</p>
+                <p className="mt-1 text-sm text-foreground/60">
+                  Fichier tel que publié par la source, sans retraitement.
                 </p>
-              );
-            })}
-          </article>
+              </div>
+              <a
+                href={text.sourcePdfUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
+              >
+                Ouvrir le PDF dans un nouvel onglet
+              </a>
+            </div>
+          ) : (
+            <article className="prose-course mt-8 max-w-none text-foreground/90">
+              {blocks.map((b, i) => {
+                if (b.type === "heading") {
+                  const Tag = HEADING_TAG[b.level] ?? "h2";
+                  return (
+                    <Tag key={i} id={b.id} className={`scroll-mt-6 ${HEADING_CLASS[b.level] ?? ""}`}>
+                      {b.text}
+                    </Tag>
+                  );
+                }
+                if (b.type === "article") {
+                  return (
+                    <div key={i} id={b.id} className="scroll-mt-6 mt-6">
+                      <p className="font-semibold text-brand-dark">{b.label}</p>
+                      {b.alineas.map((a, j) => (
+                        <p key={j} className="mt-2 leading-relaxed">
+                          {b.alineas.length > 1 && <em className="mr-1.5 text-sm text-gold">Alinéa {j + 1}.</em>}
+                          {a}
+                        </p>
+                      ))}
+                    </div>
+                  );
+                }
+                return (
+                  <p key={i} className="mt-3 whitespace-pre-line">
+                    {b.text}
+                  </p>
+                );
+              })}
+            </article>
+          )}
         </div>
       </div>
     </div>

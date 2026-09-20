@@ -277,6 +277,7 @@ model LegalText {
   dateMajRecente  DateTime @updatedAt
   content       String
   fiable        Boolean   @default(true)
+  sourcePdfUrl  String? // PDF source original, non modifié (lecteur intégré)
   createdAt     DateTime  @default(now())
 
   favorites     Favorite[]

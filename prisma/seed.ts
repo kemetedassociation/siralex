@@ -168,6 +168,7 @@ async function main() {
             reference: t.reference,
             datePublication: new Date(t.datePublication),
             content: t.content,
+            ...(t.fiable === false ? { fiable: false } : {}),
           },
         }))
     );

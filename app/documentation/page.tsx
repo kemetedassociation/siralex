@@ -177,9 +177,13 @@ function TextCard({ t }: { t: LegalTextRow }) {
       <p className="mt-1 text-sm text-foreground/60">
         {t.matiere} · {t.juridiction} · réf. {t.reference}
       </p>
-      {t.fiable && (
+      {t.fiable ? (
         <span className="mt-2 inline-block rounded bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
           Contenu validé
+        </span>
+      ) : (
+        <span className="mt-2 inline-block rounded bg-gold/15 px-2 py-0.5 text-xs font-medium text-gold">
+          Extrait par OCR — à vérifier
         </span>
       )}
     </Link>

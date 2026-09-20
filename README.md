@@ -67,10 +67,9 @@ version :
   Toute transaction réussit, sauf le code `0000` qui démontre le parcours
   d'échec (suspension d'abonnement). Aucune intégration Orange Money / Wave /
   carte bancaire réelle.
-- **Contenus juridiques** : 23 textes réels intégralement chargés, voire 24
-  avec le Code électoral en cours d'intégration par OCR (voir ci-dessous
-  « Corpus juridique ») ; seule la jurisprudence reste illustrative (aucune
-  vraie décision fournie).
+- **Contenus juridiques** : les 24 textes demandés sont chargés et réels (voir
+  ci-dessous « Corpus juridique ») ; seule la jurisprudence reste illustrative
+  (aucune vraie décision fournie).
 - **Application mobile native** : non développée. L'interface web est
   responsive (mobile/tablette/desktop) mais il n'y a pas d'app iOS/Android
   ni de mode hors-ligne.
@@ -84,30 +83,32 @@ version :
 ## Corpus juridique
 
 `prisma/legal-texts/*.json` contient le texte intégral, extrait et nettoyé,
-de 23 textes officiels (chargés par `prisma/seed.ts`) :
+de 24 textes officiels (chargés par `prisma/seed.ts`) :
 
 - **Sénégal** — COCC, Code de la famille, Code de procédure civile, Code
   pénal, Code de procédure pénale, Code du travail, Code de la sécurité
   sociale, Code général des Impôts, Code des douanes, Code des
-  investissements, Code des marchés publics, Constitution, Code général des
-  collectivités territoriales.
+  investissements, Code des marchés publics, Constitution, Code électoral,
+  Code général des collectivités territoriales.
 - **OHADA** — 10 actes uniformes (droit commercial général, sociétés
   commerciales et GIE, sûretés, procédures collectives, droit comptable,
   transport de marchandises par route, arbitrage, médiation, sociétés
   coopératives, procédures simplifiées de recouvrement et voies d'exécution).
 
-Les cinq premiers de ces textes (Code pénal, Code de la sécurité sociale, CGI,
-Code des marchés publics, AUPSRVE) n'étaient pas exploitables depuis les PDF
-fournis dans `Siri docs/` (police sans table d'encodage ou scan sans couche
-texte) ; ils ont été retrouvés propres et à jour sur des sources officielles
-alternatives (Ministère de la Justice, Direction des Impôts, Journal Officiel,
-vie-publique.sn, senlii.org/AfricanLII) — voir `prisma/legal-texts/` pour la
-référence exacte de chacun.
+Six de ces textes (Code pénal, Code de la sécurité sociale, CGI, Code des
+marchés publics, Code électoral, AUPSRVE) n'étaient pas exploitables depuis
+les PDF fournis dans `Siri docs/` (police sans table d'encodage ou scan sans
+couche texte). Pour les cinq premiers, une source alternative propre et à
+jour a été trouvée (Ministère de la Justice, Direction des Impôts, Journal
+Officiel, vie-publique.sn, senlii.org/AfricanLII) — voir `prisma/legal-texts/`
+pour la référence exacte de chacun.
 
-**Code électoral** : seule version trouvée est un PDF entièrement scanné
-(176 pages, aucune source officielle alternative en texte natif) ; en cours
-d'intégration par OCR local (voir le script `ocr_electoral.py` généré pour
-cette tâche — non inclus dans le dépôt).
+Pour le **Code électoral**, aucune source alternative en texte natif n'a été
+trouvée (même les sites officiels ne distribuent qu'un scan) ; son contenu a
+donc été obtenu par OCR local sur les 176 pages, avec une correction
+automatique des erreurs les plus fréquentes. Il est signalé comme tel dans
+l'app (`fiable: false` → badge « Extrait par OCR — à vérifier » au lieu de
+« Contenu validé ») et porte une note éditoriale en tête de son propre texte.
 
 Les fichiers PDF sources (dossier `Siri docs/`) ne sont pas versionnés
 (volumineux, non nécessaires au runtime une fois le contenu importé en base).

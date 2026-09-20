@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSession } from "@/lib/session";
 import { UserMenu } from "@/components/user-menu";
 import { MobileMenu } from "@/components/mobile-menu";
@@ -27,9 +28,7 @@ export async function Nav() {
     <header className="relative bg-brand-dark text-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-serif text-lg font-semibold">
-          <span className="inline-block h-7 w-7 rounded bg-gold text-center text-sm leading-7 text-brand-dark">
-            S
-          </span>
+          <Image src="/logo-badge.png" alt="SiraLex" width={32} height={32} className="h-8 w-8" priority />
           SiraLex
         </Link>
 

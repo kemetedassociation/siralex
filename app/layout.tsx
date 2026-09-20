@@ -14,13 +14,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_TITLE = "SiraLex — La voie du droit en Afrique francophone";
+const SITE_DESCRIPTION =
+  "SiraLex rassemble formation, documentation juridique, examens et communauté pour les étudiants, enseignants et professionnels du droit sénégalais et OHADA.";
+
 export const metadata: Metadata = {
-  title: "SiraLex — La voie du droit en Afrique francophone",
-  description:
-    "SiraLex rassemble formation, documentation juridique, examens et communauté pour les étudiants, enseignants et professionnels du droit sénégalais et OHADA.",
+  metadataBase: new URL("https://siralex-iota.vercel.app"),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" },
       { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -32,6 +37,19 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "SiraLex",
+  },
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    type: "website",
+    locale: "fr_FR",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "SiraLex" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.png"],
   },
 };
 

@@ -1,6 +1,7 @@
 // Charge les quatre fiches méthodologiques (dissertation, commentaire
-// d'article, commentaire d'arrêt, cas pratique) et un sujet d'entraînement
-// par fiche. Idempotent : peut être relancé sans dupliquer les données.
+// d'article, commentaire d'arrêt, cas pratique) et plusieurs sujets
+// d'entraînement par fiche. Idempotent : peut être relancé sans dupliquer
+// les données.
 import { PrismaClient, type TypeMethodo } from "@prisma/client";
 import fs from "node:fs";
 import path from "node:path";
@@ -38,33 +39,145 @@ CONFIRME le jugement entrepris en toutes ses dispositions ;
 
 Condamne la société Sénégal Bâtiment aux dépens.`;
 
-const EXERCISES: Record<string, { title: string; niveau?: "L1" | "L2" | "L3" | "M1" | "M2"; prompt: string; support?: string }> = {
-  DISSERTATION: {
-    title: "La distinction entre obligation de moyens et obligation de résultat",
-    niveau: "L2",
-    prompt:
-      "« La distinction entre obligation de moyens et obligation de résultat en droit sénégalais des obligations. »\n\nTraitez ce sujet de dissertation juridique en respectant strictement la méthode enseignée : introduction selon la technique des trois entonnoirs, développement en deux parties et deux sous-parties, sans conclusion.",
-  },
-  COMMENTAIRE_ARTICLE: {
-    title: "Commentez l'article 3 du COCC — la classification des obligations",
-    niveau: "L1",
-    prompt:
-      "Commentez l'article 3 du Code des Obligations Civiles et Commerciales (COCC) du Sénégal, reproduit ci-contre. Vous suivrez la méthode du commentaire d'article : identification du texte, glose et analyse grammaticale des termes employés, puis appréciation de la disposition avant son adoption, au moment de son adoption et après son adoption.",
-    support: "Article 3 COCC — Classification\n\n« L'obligation a pour objet de donner, de faire ou de ne pas faire quelque chose. »",
-  },
-  COMMENTAIRE_ARRET: {
-    title: "Clause pénale et pouvoir de révision du juge",
-    niveau: "L2",
-    prompt:
-      "Commentez la décision reproduite ci-contre. Vous rédigerez d'abord une fiche d'arrêt (faits, procédure, prétentions des parties, problème juridique, solution), puis un commentaire structuré en deux parties et deux sous-parties combinant analyse et appréciation.",
-    support: ARRET_SUPPORT,
-  },
-  CAS_PRATIQUE: {
-    title: "La vente conclue par un mineur non émancipé",
-    niveau: "L1",
-    prompt:
-      "Amadou, âgé de 17 ans, achète seul un ordinateur portable d'occasion à Moussa, commerçant informatique établi à Dakar, pour un prix de 250 000 francs CFA payé comptant. Trois semaines plus tard, les parents d'Amadou découvrent l'achat et s'opposent à la vente, estimant que leur fils ne pouvait pas s'engager seul. Moussa refuse de reprendre l'ordinateur, affirmant que la vente est ferme et définitive puisqu'elle a été librement consentie et immédiatement exécutée.\n\n1. Amadou pouvait-il valablement conclure seul ce contrat de vente ?\n2. Quelles conséquences juridiques les parents d'Amadou peuvent-ils tirer de la situation ?",
-  },
+const ARRET_SUPPORT_2 = `Décision reproduite à des fins pédagogiques uniquement — elle ne constitue pas une jurisprudence réelle et ne peut être citée comme telle.
+
+Cour d'appel de Dakar, chambre commerciale, 18 mai 2022
+
+LA COUR,
+
+Vu les dispositions du Code des obligations civiles et commerciales relatives à la résolution du contrat pour inexécution ;
+
+Attendu que la société Teranga Import a vendu à M. Ousmane Diagne un lot de 500 sacs de ciment, livrable le 5 janvier 2022 ; que seuls 200 sacs ont été livrés à cette date, le solde n'ayant jamais été livré malgré mise en demeure du 20 janvier 2022 ;
+
+Attendu que M. Diagne a assigné la société Teranga Import en résolution du contrat et restitution des sommes versées pour la partie non livrée ; que le tribunal régional a fait droit à cette demande par jugement du 10 mars 2022 ;
+
+Attendu que la société Teranga Import, appelante, soutient que la livraison partielle ne constituait qu'un simple retard n'autorisant pas la résolution, et que M. Diagne, intimé, aurait dû se contenter de dommages-intérêts ;
+
+Mais attendu que l'inexécution partielle prolongée, portant sur soixante pour cent de la commande et non réparée après mise en demeure, revêt un caractère de gravité suffisant pour justifier la résolution du contrat ; que le tribunal a exactement retenu que la résolution emporte restitution réciproque des prestations déjà fournies pour la partie non exécutée ;
+
+D'où il suit que le moyen n'est pas fondé ;
+
+PAR CES MOTIFS,
+
+CONFIRME le jugement entrepris en toutes ses dispositions ;
+
+Condamne la société Teranga Import aux dépens.`;
+
+const ARRET_SUPPORT_3 = `Décision reproduite à des fins pédagogiques uniquement — elle ne constitue pas une jurisprudence réelle et ne peut être citée comme telle.
+
+Cour d'appel de Dakar, chambre civile, 9 septembre 2020
+
+LA COUR,
+
+Vu les dispositions du Code des obligations civiles et commerciales relatives aux vices du consentement ;
+
+Attendu que Mme Aminata Sow a acquis auprès de la Bijouterie Doré un collier présenté comme « or 18 carats » pour un prix de 600 000 francs CFA ; qu'une expertise ultérieure, non contestée, a révélé qu'il s'agissait d'un alliage plaqué or ;
+
+Attendu que Mme Sow a assigné la Bijouterie Doré en nullité de la vente pour erreur sur la substance ; que le tribunal régional a annulé la vente et ordonné la restitution du prix par jugement du 4 février 2020 ;
+
+Attendu que la Bijouterie Doré, appelante, soutient que Mme Sow n'établit pas avoir fait de la teneur en or une condition déterminante de son consentement ;
+
+Mais attendu que la nature du métal constituait la qualité substantielle sur laquelle avait porté, de façon déterminante, le consentement de l'acheteuse, ainsi que l'établissait le prix payé, très supérieur à celui d'un bijou plaqué ; que l'erreur portait donc bien sur la substance même de la chose vendue ;
+
+D'où il suit que le moyen n'est pas fondé ;
+
+PAR CES MOTIFS,
+
+CONFIRME le jugement entrepris en toutes ses dispositions ;
+
+Condamne la Bijouterie Doré aux dépens.`;
+
+type ExerciseDef = { title: string; niveau?: "L1" | "L2" | "L3" | "M1" | "M2"; prompt: string; support?: string };
+
+const EXERCISES: Record<string, ExerciseDef[]> = {
+  DISSERTATION: [
+    {
+      title: "La distinction entre obligation de moyens et obligation de résultat",
+      niveau: "L2",
+      prompt:
+        "« La distinction entre obligation de moyens et obligation de résultat en droit sénégalais des obligations. »\n\nTraitez ce sujet de dissertation juridique en respectant strictement la méthode enseignée : introduction selon la technique des trois entonnoirs, développement en deux parties et deux sous-parties, sans conclusion.",
+    },
+    {
+      title: "La force obligatoire du contrat en droit sénégalais des obligations",
+      niveau: "L2",
+      prompt:
+        "« La force obligatoire du contrat en droit sénégalais des obligations. »\n\nTraitez ce sujet de dissertation juridique en respectant strictement la méthode enseignée : introduction selon la technique des trois entonnoirs, développement en deux parties et deux sous-parties, sans conclusion.",
+    },
+    {
+      title: "La primauté du droit OHADA sur le droit national des États membres",
+      niveau: "L3",
+      prompt:
+        "« La primauté du droit OHADA sur le droit national des États membres. »\n\nTraitez ce sujet de dissertation juridique en respectant strictement la méthode enseignée : introduction selon la technique des trois entonnoirs, développement en deux parties et deux sous-parties, sans conclusion.",
+    },
+  ],
+  COMMENTAIRE_ARTICLE: [
+    {
+      title: "Commentez l'article 3 du COCC — la classification des obligations",
+      niveau: "L1",
+      prompt:
+        "Commentez l'article 3 du Code des Obligations Civiles et Commerciales (COCC) du Sénégal, reproduit ci-contre. Vous suivrez la méthode du commentaire d'article : identification du texte, glose et analyse grammaticale des termes employés, puis appréciation de la disposition avant son adoption, au moment de son adoption et après son adoption.",
+      support: "Article 3 COCC — Classification\n\n« L'obligation a pour objet de donner, de faire ou de ne pas faire quelque chose. »",
+    },
+    {
+      title: "Commentez l'article 6 du COCC — l'obligation de faire ou de ne pas faire",
+      niveau: "L1",
+      prompt:
+        "Commentez l'article 6 du Code des Obligations Civiles et Commerciales (COCC) du Sénégal, reproduit ci-contre. Vous suivrez la méthode du commentaire d'article : identification du texte, glose et analyse grammaticale, puis appréciation de la disposition avant son adoption, au moment de son adoption et après son adoption.",
+      support:
+        "Article 6 COCC — Obligation de faire ou de ne pas faire\n\n« Le débiteur d'une obligation de faire ou de ne pas faire doit exécuter complètement son obligation.\n\nA défaut, il est tenu à réparation. Le juge peut en outre ordonner la destruction de ce qui aura été fait contrairement à l'obligation. »",
+    },
+    {
+      title: "Commentez l'article 9 du COCC — la charge de la preuve",
+      niveau: "L1",
+      prompt:
+        "Commentez l'article 9 du Code des Obligations Civiles et Commerciales (COCC) du Sénégal, reproduit ci-contre. Vous suivrez la méthode du commentaire d'article : identification du texte, glose et analyse grammaticale, puis appréciation de la disposition avant son adoption, au moment de son adoption et après son adoption.",
+      support:
+        "Article 9 COCC — Droit commun\n\n« Celui qui réclame l'exécution d'une obligation doit en prouver l'existence.\n\nCelui qui se prétend libéré doit prouver que l'obligation est inexistante ou éteinte. »",
+    },
+  ],
+  COMMENTAIRE_ARRET: [
+    {
+      title: "Clause pénale et pouvoir de révision du juge",
+      niveau: "L2",
+      prompt:
+        "Commentez la décision reproduite ci-contre. Vous rédigerez d'abord une fiche d'arrêt (faits, procédure, prétentions des parties, problème juridique, solution), puis un commentaire structuré en deux parties et deux sous-parties combinant analyse et appréciation.",
+      support: ARRET_SUPPORT,
+    },
+    {
+      title: "Résolution du contrat pour inexécution partielle",
+      niveau: "L2",
+      prompt:
+        "Commentez la décision reproduite ci-contre. Vous rédigerez d'abord une fiche d'arrêt (faits, procédure, prétentions des parties, problème juridique, solution), puis un commentaire structuré en deux parties et deux sous-parties combinant analyse et appréciation.",
+      support: ARRET_SUPPORT_2,
+    },
+    {
+      title: "L'erreur sur la substance, vice du consentement",
+      niveau: "L2",
+      prompt:
+        "Commentez la décision reproduite ci-contre. Vous rédigerez d'abord une fiche d'arrêt (faits, procédure, prétentions des parties, problème juridique, solution), puis un commentaire structuré en deux parties et deux sous-parties combinant analyse et appréciation.",
+      support: ARRET_SUPPORT_3,
+    },
+  ],
+  CAS_PRATIQUE: [
+    {
+      title: "La vente conclue par un mineur non émancipé",
+      niveau: "L1",
+      prompt:
+        "Amadou, âgé de 17 ans, achète seul un ordinateur portable d'occasion à Moussa, commerçant informatique établi à Dakar, pour un prix de 250 000 francs CFA payé comptant. Trois semaines plus tard, les parents d'Amadou découvrent l'achat et s'opposent à la vente, estimant que leur fils ne pouvait pas s'engager seul. Moussa refuse de reprendre l'ordinateur, affirmant que la vente est ferme et définitive puisqu'elle a été librement consentie et immédiatement exécutée.\n\n1. Amadou pouvait-il valablement conclure seul ce contrat de vente ?\n2. Quelles conséquences juridiques les parents d'Amadou peuvent-ils tirer de la situation ?",
+    },
+    {
+      title: "L'atelier de couture qui ne livre pas à temps",
+      niveau: "L2",
+      prompt:
+        "Ndèye Fatou commande à l'atelier de couture « Sénégal Style » la confection de dix tenues traditionnelles pour un mariage prévu le 15 décembre, moyennant un acompte de 150 000 francs CFA versé le jour de la commande. Le contrat prévoit une livraison au plus tard le 10 décembre. Le 12 décembre, aucune tenue n'est livrée et l'atelier ne répond plus au téléphone. Ndèye Fatou doit finalement louer des tenues en urgence, pour un coût de 200 000 francs CFA.\n\n1. L'atelier a-t-il manqué à ses obligations contractuelles ?\n2. Ndèye Fatou peut-elle obtenir réparation, et sur quel fondement ?",
+    },
+    {
+      title: "La moto vendue comme « jamais accidentée »",
+      niveau: "L2",
+      prompt:
+        "Ibrahima achète à un particulier, Cheikh, une moto d'occasion présentée comme « jamais accidentée, entretien suivi », pour un prix de 800 000 francs CFA. Deux semaines après l'achat, le mécanicien d'Ibrahima découvre que le cadre de la moto a été gravement endommagé puis réparé après un accident survenu un an plus tôt — ce que Cheikh savait et n'a jamais mentionné.\n\n1. Le consentement d'Ibrahima a-t-il été vicié ?\n2. Quelle action Ibrahima peut-il engager, et avec quelles conséquences sur le contrat ?",
+    },
+  ],
 };
 
 async function main() {
@@ -84,27 +197,28 @@ async function main() {
       create: { type, title: raw.title, subtitle: raw.subtitle, content },
     });
 
-    const ex = EXERCISES[type];
-    const existingExercise = await prisma.methodologyExercise.findFirst({
-      where: { guideId: guide.id, title: ex.title },
-    });
-    if (!existingExercise) {
-      await prisma.methodologyExercise.create({
-        data: {
-          guideId: guide.id,
-          title: ex.title,
-          niveau: ex.niveau,
-          prompt: ex.prompt,
-          support: ex.support ?? null,
-        },
+    for (const ex of EXERCISES[type]) {
+      const existingExercise = await prisma.methodologyExercise.findFirst({
+        where: { guideId: guide.id, title: ex.title },
       });
-      console.log(`Créé: exercice "${ex.title}"`);
-    } else {
-      await prisma.methodologyExercise.update({
-        where: { id: existingExercise.id },
-        data: { prompt: ex.prompt, support: ex.support ?? null, niveau: ex.niveau },
-      });
-      console.log(`Mis à jour: exercice "${ex.title}"`);
+      if (!existingExercise) {
+        await prisma.methodologyExercise.create({
+          data: {
+            guideId: guide.id,
+            title: ex.title,
+            niveau: ex.niveau,
+            prompt: ex.prompt,
+            support: ex.support ?? null,
+          },
+        });
+        console.log(`Créé: exercice "${ex.title}"`);
+      } else {
+        await prisma.methodologyExercise.update({
+          where: { id: existingExercise.id },
+          data: { prompt: ex.prompt, support: ex.support ?? null, niveau: ex.niveau },
+        });
+        console.log(`Mis à jour: exercice "${ex.title}"`);
+      }
     }
 
     console.log(`Fiche méthodologique: ${raw.title}`);

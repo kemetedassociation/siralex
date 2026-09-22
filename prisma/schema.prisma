@@ -47,61 +47,62 @@ enum StatutAbonnement {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  passwordHash  String
-  name          String
-  role          Role     @default(ETUDIANT)
-  niveau        Niveau?
-  matiere       String? // matière enseignée, pour les enseignants
-  universite    String?
-  verified      Boolean  @default(false) // profil professionnel/enseignant vérifié
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(ETUDIANT)
+  niveau       Niveau?
+  matiere      String? // matière enseignée, pour les enseignants
+  universite   String?
+  verified     Boolean  @default(false) // profil professionnel/enseignant vérifié
+  createdAt    DateTime @default(now())
 
-  subscription       Subscription?
-  coursesAuthored     Course[]        @relation("CourseAuthor")
-  coursesValidated    Course[]        @relation("CourseValidator")
-  courseVersions      CourseVersion[]
-  progress            CourseProgress[]
-  examsAuthored       Exam[]          @relation("ExamAuthor")
-  examsValidated      Exam[]          @relation("ExamValidator")
-  submissions         ExamSubmission[] @relation("SubmissionStudent")
-  corrections         ExamSubmission[] @relation("SubmissionCorrector")
-  forumThreads        ForumThread[]
-  forumPosts          ForumPost[]
-  reportsFiled        Report[]        @relation("ReportReporter")
-  moderationActions   Report[]        @relation("ReportModerator")
-  careerOffersAuthored CareerOffer[]  @relation("OfferAuthor")
-  careerOffersValidated CareerOffer[] @relation("OfferValidator")
-  applications        Application[]
-  favorites           Favorite[]
-  alerts              Alert[]
-  notes               Note[]
-  institutionId       String?
-  institution         Institution?    @relation(fields: [institutionId], references: [id])
+  subscription          Subscription?
+  coursesAuthored       Course[]              @relation("CourseAuthor")
+  coursesValidated      Course[]              @relation("CourseValidator")
+  courseVersions        CourseVersion[]
+  progress              CourseProgress[]
+  examsAuthored         Exam[]                @relation("ExamAuthor")
+  examsValidated        Exam[]                @relation("ExamValidator")
+  submissions           ExamSubmission[]      @relation("SubmissionStudent")
+  corrections           ExamSubmission[]      @relation("SubmissionCorrector")
+  forumThreads          ForumThread[]
+  forumPosts            ForumPost[]
+  reportsFiled          Report[]              @relation("ReportReporter")
+  moderationActions     Report[]              @relation("ReportModerator")
+  careerOffersAuthored  CareerOffer[]         @relation("OfferAuthor")
+  careerOffersValidated CareerOffer[]         @relation("OfferValidator")
+  applications          Application[]
+  favorites             Favorite[]
+  alerts                Alert[]
+  notes                 Note[]
+  methodologyResponses  MethodologyResponse[]
+  institutionId         String?
+  institution           Institution?          @relation(fields: [institutionId], references: [id])
 }
 
 model Institution {
-  id            String   @id @default(cuid())
-  name          String
-  type          String // Université, Cabinet, Administration...
-  contactEmail  String
-  licenseSeats  Int      @default(0)
-  createdAt     DateTime @default(now())
+  id           String   @id @default(cuid())
+  name         String
+  type         String // Université, Cabinet, Administration...
+  contactEmail String
+  licenseSeats Int      @default(0)
+  createdAt    DateTime @default(now())
 
-  members       User[]
+  members User[]
 }
 
 model Subscription {
-  id           String            @id @default(cuid())
-  userId       String            @unique
-  user         User              @relation(fields: [userId], references: [id])
-  plan         Formule           @default(GRATUITE)
-  status       StatutAbonnement  @default(ACTIF)
-  startedAt    DateTime          @default(now())
-  renewsAt     DateTime?
+  id            String           @id @default(cuid())
+  userId        String           @unique
+  user          User             @relation(fields: [userId], references: [id])
+  plan          Formule          @default(GRATUITE)
+  status        StatutAbonnement @default(ACTIF)
+  startedAt     DateTime         @default(now())
+  renewsAt      DateTime?
   paymentMethod String? // MOBILE_MONEY | CARTE
-  payments     Payment[]
+  payments      Payment[]
 }
 
 enum StatutPaiement {
@@ -130,37 +131,37 @@ enum StatutContenu {
 }
 
 model Course {
-  id          String         @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
-  slug        String         @unique
+  slug        String        @unique
   niveau      Niveau
   matiere     String
   filiere     String?
   universite  String?
   summary     String
   content     String // markdown
-  durationMin Int            @default(30)
-  status      StatutContenu  @default(BROUILLON)
+  durationMin Int           @default(30)
+  status      StatutContenu @default(BROUILLON)
   authorId    String
-  author      User           @relation("CourseAuthor", fields: [authorId], references: [id])
+  author      User          @relation("CourseAuthor", fields: [authorId], references: [id])
   validatorId String?
-  validator   User?          @relation("CourseValidator", fields: [validatorId], references: [id])
+  validator   User?         @relation("CourseValidator", fields: [validatorId], references: [id])
   publishedAt DateTime?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  versions    CourseVersion[]
-  progress    CourseProgress[]
+  versions CourseVersion[]
+  progress CourseProgress[]
 }
 
 model CourseVersion {
-  id        String   @id @default(cuid())
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id])
-  content   String
+  id         String   @id @default(cuid())
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id])
+  content    String
   editedById String
-  editedBy  User     @relation(fields: [editedById], references: [id])
-  createdAt DateTime @default(now())
+  editedBy   User     @relation(fields: [editedById], references: [id])
+  createdAt  DateTime @default(now())
 }
 
 enum StatutProgression {
@@ -212,18 +213,18 @@ model Exam {
   closeAt      DateTime?
   createdAt    DateTime      @default(now())
 
-  questions    ExamQuestion[]
-  submissions  ExamSubmission[]
+  questions   ExamQuestion[]
+  submissions ExamSubmission[]
 }
 
 model ExamQuestion {
-  id            String @id @default(cuid())
-  examId        String
-  exam          Exam   @relation(fields: [examId], references: [id])
-  question      String
-  options       String // JSON string array
-  correctIndex  Int
-  order         Int    @default(0)
+  id           String @id @default(cuid())
+  examId       String
+  exam         Exam   @relation(fields: [examId], references: [id])
+  question     String
+  options      String // JSON string array
+  correctIndex Int
+  order        Int    @default(0)
 }
 
 enum StatutCopie {
@@ -267,22 +268,22 @@ enum TypeTexte {
 }
 
 model LegalText {
-  id            String    @id @default(cuid())
-  title         String
-  type          TypeTexte
-  matiere       String
-  juridiction   String // Sénégal, OHADA...
-  reference     String
+  id              String    @id @default(cuid())
+  title           String
+  type            TypeTexte
+  matiere         String
+  juridiction     String // Sénégal, OHADA...
+  reference       String
   datePublication DateTime
-  dateMajRecente  DateTime @updatedAt
-  content       String
-  fiable        Boolean   @default(true)
-  sourcePdfUrl  String? // PDF source original, non modifié (lecteur intégré)
-  createdAt     DateTime  @default(now())
+  dateMajRecente  DateTime  @updatedAt
+  content         String
+  fiable          Boolean   @default(true)
+  sourcePdfUrl    String? // PDF source original, non modifié (lecteur intégré)
+  createdAt       DateTime  @default(now())
 
-  favorites     Favorite[]
-  alerts        Alert[]
-  notes         Note[]
+  favorites Favorite[]
+  alerts    Alert[]
+  notes     Note[]
 }
 
 model Jurisprudence {
@@ -296,7 +297,7 @@ model Jurisprudence {
   content     String
   createdAt   DateTime @default(now())
 
-  favorites   Favorite[]
+  favorites Favorite[]
 }
 
 enum TypeCible {
@@ -317,14 +318,14 @@ model Favorite {
 }
 
 model Alert {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
   userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
   cible       TypeCible
   legalTextId String?
   legalText   LegalText? @relation(fields: [legalTextId], references: [id])
   thematique  String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime   @default(now())
 }
 
 // Notes personnelles ("pense-bête") prises par un utilisateur sur un texte.
@@ -340,32 +341,89 @@ model Note {
 }
 
 // ---------------------------------------------------------------------------
+// Module Méthodologie juridique — les quatre exercices classiques
+// ---------------------------------------------------------------------------
+
+enum TypeMethodo {
+  DISSERTATION
+  COMMENTAIRE_ARTICLE
+  COMMENTAIRE_ARRET
+  CAS_PRATIQUE
+}
+
+// Fiche méthodologique (objectif, méthode étape par étape, à faire / à ne pas
+// faire) pour l'un des quatre exercices juridiques classiques.
+model MethodologyGuide {
+  id        String      @id @default(cuid())
+  type      TypeMethodo @unique
+  title     String
+  subtitle  String
+  content   String // JSON structuré : sections, à faire / à ne pas faire
+  createdAt DateTime    @default(now())
+
+  exercises MethodologyExercise[]
+}
+
+// Sujet d'entraînement rattaché à une fiche méthodologique, sur lequel
+// l'étudiant peut s'exercer et faire vérifier le respect de la méthode.
+model MethodologyExercise {
+  id        String           @id @default(cuid())
+  guideId   String
+  guide     MethodologyGuide @relation(fields: [guideId], references: [id])
+  title     String
+  niveau    Niveau?
+  prompt    String // énoncé du sujet
+  support   String? // support annexe (texte d'article, extrait d'arrêt...)
+  createdAt DateTime         @default(now())
+
+  responses MethodologyResponse[]
+}
+
+// Réponse rédigée par un étudiant à un sujet d'entraînement, avec analyse
+// méthodologique automatique (respect de la structure attendue) et score.
+model MethodologyResponse {
+  id         String              @id @default(cuid())
+  userId     String
+  user       User                @relation(fields: [userId], references: [id])
+  exerciseId String
+  exercise   MethodologyExercise @relation(fields: [exerciseId], references: [id])
+  content    String
+  score      Int?
+  feedback   String? // JSON : détail des critères vérifiés
+  analyzedAt DateTime?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@unique([userId, exerciseId])
+}
+
+// ---------------------------------------------------------------------------
 // Module Communauté (section 4.5)
 // ---------------------------------------------------------------------------
 
 model ForumThread {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   title     String
   matiere   String?
   promotion String?
   authorId  String
-  author    User        @relation(fields: [authorId], references: [id])
-  createdAt DateTime    @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
 
-  posts     ForumPost[]
+  posts ForumPost[]
 }
 
 model ForumPost {
-  id        String    @id @default(cuid())
+  id        String      @id @default(cuid())
   threadId  String
   thread    ForumThread @relation(fields: [threadId], references: [id])
   authorId  String
-  author    User      @relation(fields: [authorId], references: [id])
+  author    User        @relation(fields: [authorId], references: [id])
   content   String
-  removed   Boolean   @default(false)
-  createdAt DateTime  @default(now())
+  removed   Boolean     @default(false)
+  createdAt DateTime    @default(now())
 
-  reports   Report[]
+  reports Report[]
 }
 
 enum StatutSignalement {
@@ -426,14 +484,14 @@ enum StatutCandidature {
 }
 
 model Application {
-  id        String             @id @default(cuid())
+  id        String            @id @default(cuid())
   offerId   String
-  offer     CareerOffer        @relation(fields: [offerId], references: [id])
+  offer     CareerOffer       @relation(fields: [offerId], references: [id])
   userId    String
-  user      User               @relation(fields: [userId], references: [id])
+  user      User              @relation(fields: [userId], references: [id])
   message   String
-  status    StatutCandidature  @default(ENVOYEE)
-  createdAt DateTime           @default(now())
+  status    StatutCandidature @default(ENVOYEE)
+  createdAt DateTime          @default(now())
 
   @@unique([offerId, userId])
 }

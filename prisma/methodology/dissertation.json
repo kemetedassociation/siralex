@@ -1,0 +1,157 @@
+{
+  "type": "DISSERTATION",
+  "title": "La dissertation juridique",
+  "subtitle": "Méthode, bonnes pratiques et erreurs à éviter",
+  "niveau": "Licence 1, 2, 3 — Droit sénégalais et OHADA",
+  "sections": [
+    {
+      "heading": "1. Objectif de l'exercice",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La dissertation juridique n'est pas une récitation du cours. Elle évalue la capacité à construire une démonstration logique et personnelle à partir de connaissances choisies et organisées au service d'une idée directrice. Le correcteur doit percevoir, par la seule lecture du plan, l'idée que l'étudiant cherche à démontrer."
+        }
+      ]
+    },
+    {
+      "heading": "2. Ce qu'il faut savoir avant de commencer",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La dissertation comporte deux grandes parties seulement : une introduction et un développement. Il n'y a pas de conclusion."
+        },
+        {
+          "type": "p",
+          "text": "Le développement se construit en deux parties (I et II), chacune subdivisée en deux sous-parties (A et B). Le plan en trois parties est à proscrire."
+        },
+        {
+          "type": "p",
+          "text": "Il n'existe pas de plan-type universel, mais des armatures classiques réutilisables si elles sont adaptées au sujet :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Conditions / Effets",
+            "Notion / Régime juridique",
+            "Principe / Exception",
+            "Notion textuelle / Interprétation jurisprudentielle"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3. Méthode, étape par étape",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La dissertation est un exercice où l'étudiant démontre ses talents de synthèse, en organisant ses connaissances pour exposer de manière réfléchie, logique et le cas échéant critique l'état du droit sur une question. Le non-respect de la méthodologie fait courir le risque de passer à côté du sujet, quelle que soit la qualité des connaissances."
+        }
+      ]
+    },
+    {
+      "heading": "3.1 Étudier les termes du sujet",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Le sujet doit être étudié mot à mot afin de comprendre la problématique, c'est-à-dire la question réellement posée. Il peut s'agir de réfléchir sur une notion isolée, ou de mener une comparaison entre deux institutions juridiques."
+        }
+      ]
+    },
+    {
+      "heading": "3.2 Rassembler les connaissances",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Une fois la problématique dégagée, il convient de rassembler tous les éléments nécessaires à la construction du raisonnement. Les connaissances doivent venir comme des supports à la démonstration organisée par l'étudiant : le seul exposé de connaissances, sans qu'elles interviennent comme des arguments au service d'un raisonnement, ne vaut rien."
+        }
+      ]
+    },
+    {
+      "heading": "3.3 Construire le plan",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Il n'existe pas de plan-type qui s'adapte à toutes les situations, mais des armatures classiques peuvent servir de point de départ, à condition d'être réellement adaptées au sujet traité :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "I. Conditions — II. Effets",
+            "I. Notion — II. Régime juridique",
+            "I. Principe — II. Exceptions",
+            "I. Notion textuelle — II. Interprétation jurisprudentielle"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Le plan doit être clair dans son déroulement et dans ses intitulés, qui doivent être en parfaite adéquation avec ce qui sera développé dans les parties : un intitulé trop éloigné de son contenu réel est une faute grave."
+        }
+      ]
+    },
+    {
+      "heading": "3.4 Rédiger : ce qui va au brouillon, ce qui n'y va pas",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Dans les conditions de l'examen, il n'y a pas le temps de rédiger tous les développements au brouillon. Seuls l'introduction et le plan doivent y être travaillés ; le reste se rédige directement sur la copie."
+        }
+      ]
+    },
+    {
+      "heading": "3.5 L'introduction : la technique des trois entonnoirs",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "L'introduction est un moment clé : elle doit donner envie de découvrir le devoir. Elle respecte la technique dite des trois entonnoirs :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Premier entonnoir — amener le sujet, le resituer dans son contexte juridique, donner les définitions.",
+            "Deuxième entonnoir — resituer le sujet dans son contexte méta-juridique : dimension historique, sociologique, économique ou philosophique.",
+            "Troisième entonnoir — l'annonce de plan, qui expose la problématique à laquelle le plan doit répondre de manière logique."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Concrètement, l'introduction respecte ces sept étapes :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Amener et poser le sujet",
+            "Définir les termes du sujet",
+            "Délimiter le sujet",
+            "Faire ressortir les intérêts du sujet",
+            "Soulever la problématique",
+            "Justifier le plan",
+            "Annoncer le plan"
+          ]
+        }
+      ]
+    }
+  ],
+  "faire": [
+    "Traiter le sujet tel qu'il est posé, rien d'autre",
+    "Justifier toute exclusion ou délimitation en introduction",
+    "Utiliser les connaissances comme arguments au service d'une démonstration",
+    "Adapter réellement l'armature de plan choisie au sujet traité",
+    "Ne rédiger au brouillon que l'introduction et le plan"
+  ],
+  "nePasFaire": [
+    "Réciter le cours sans organiser une démonstration",
+    "Faire un plan en trois parties",
+    "Rédiger intégralement au brouillon avant de recopier",
+    "Rédiger une conclusion",
+    "Reprendre un plan-type sans l'adapter réellement au sujet",
+    "Avoir des intitulés éloignés de ce qui est réellement développé"
+  ]
+}

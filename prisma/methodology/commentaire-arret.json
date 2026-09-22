@@ -1,0 +1,137 @@
+{
+  "type": "COMMENTAIRE_ARRET",
+  "title": "Le commentaire d'arrêt",
+  "subtitle": "Méthode, bonnes pratiques et erreurs à éviter",
+  "niveau": "Licence 1, 2, 3 — Droit sénégalais et OHADA",
+  "sections": [
+    {
+      "heading": "1. Objectif de l'exercice",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Le commentaire d'arrêt consiste à analyser et apprécier juridiquement une décision de justice : quelle est sa signification, sa valeur, sa portée ? La solution retenue mérite-t-elle d'être approuvée, et pour quelles raisons juridiques ? Ce n'est ni une dissertation sur le thème de l'arrêt, ni un cas pratique cherchant une solution nouvelle : le commentaire part de la décision et y revient constamment."
+        }
+      ]
+    },
+    {
+      "heading": "2. Vocabulaire indispensable avant de commencer",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "Visa — partie de la décision où le juge cite les textes applicables (ex. article visé du COCC ou d'un Acte uniforme OHADA).",
+            "Motifs / attendus / considérants — corps de la décision, introduits par « considérant que » ou « attendu que ».",
+            "Dispositif — partie finale où le juge tranche : « casse et annule », « rejette », « confirme ».",
+            "Arrêt de rejet — la juridiction supérieure estime que les juges du fond ont correctement appliqué la règle de droit.",
+            "Arrêt de cassation — la juridiction supérieure estime que la règle de droit a été mal appliquée ; l'affaire est renvoyée.",
+            "Arrêt confirmatif / infirmatif — la cour d'appel confirme, ou au contraire infirme, la décision de première instance.",
+            "Arrêt de principe / arrêt d'espèce — l'arrêt de principe pose une solution générale appelée à faire précédent ; l'arrêt d'espèce ne s'explique que par les faits particuliers du litige.",
+            "Moyen / branche — argument avancé au soutien d'un pourvoi ; un moyen peut se diviser en plusieurs branches."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Vocabulaire procédural à respecter scrupuleusement : les juges du premier degré rendent des jugements ; la cour d'appel, la Cour Suprême et la CCJA rendent des arrêts. On interjette appel (on ne « fait pas appel ») ; on forme un pourvoi en cassation. Devant la cour d'appel, les parties sont l'appelant et l'intimé ; devant la Cour Suprême ou la CCJA, le demandeur au pourvoi et le défendeur au pourvoi."
+        }
+      ]
+    },
+    {
+      "heading": "3. Méthode, étape par étape",
+      "level": 1,
+      "blocks": []
+    },
+    {
+      "heading": "3.1 Lire et analyser la décision",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "Lire la décision au moins deux fois avant toute prise de notes.",
+            "Identifier sa structure : visa, faits, procédure, motifs, dispositif.",
+            "Surligner les mots de liaison (« alors que », « mais attendu que », « qu'en statuant ainsi ») : ils indiquent les étapes du raisonnement du juge.",
+            "Repérer s'il existe un attendu ou un considérant de principe, formulé en termes généraux et impersonnels, détaché des faits de l'espèce."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3.2 Rédiger la fiche d'arrêt",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La fiche d'arrêt constitue la matière première de l'introduction. Elle comprend cinq rubriques, précédées d'une phrase de présentation (juridiction, date, thème) :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Les faits — résumés chronologiquement, en ne retenant que les éléments utiles, avec les parties systématiquement qualifiées (jamais de noms propres : « le vendeur », « la victime », « le créancier »).",
+            "La procédure — en retraçant les degrés de juridiction avec le vocabulaire exact (jugement, puis arrêt confirmatif ou infirmatif, puis pourvoi).",
+            "Les prétentions des parties — les arguments soutenus par chacune, sans les confondre avec les motifs du juge.",
+            "Le problème juridique — une question de droit abstraite et générale, sans nom propre, qui garde son sens hors du contexte de l'espèce.",
+            "La solution — si un attendu ou considérant de principe existe, le recopier intégralement entre guillemets ; à défaut, formuler la règle dégagée en termes généraux."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3.3 Apprécier la décision",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Une fois la fiche d'arrêt établie, il faut apprécier la solution à l'aide des connaissances personnelles : est-elle conforme au droit positif ? S'agit-il d'un revirement de jurisprudence ou d'une solution déjà bien établie ? Quelle est sa portée, c'est-à-dire son influence sur l'état du droit pour l'avenir ?"
+        }
+      ]
+    },
+    {
+      "heading": "3.4 Construire le plan",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Le plan reste binaire (I / II, chacun A / B). Deux architectures reviennent le plus souvent :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "I. Analyse de la solution — II. Appréciation de la solution",
+            "I. Analyse de la solution — II. Portée de la solution (notamment en cas de revirement)"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Éviter les intitulés vagues comme « le sens de l'arrêt » ou « l'appréciation de l'arrêt » : chaque titre doit contenir l'idée elle-même, pas seulement l'annoncer."
+        }
+      ]
+    },
+    {
+      "heading": "3.5 Rédiger",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "L'introduction contient déjà la solution de l'arrêt : il ne faut ni faire durer le suspense, ni « cacher » la réponse pour la révéler plus tard. Dans le corps du devoir, adopter une rédaction circulaire : commencer et terminer chaque sous-partie en revenant au texte de la décision commentée, pour ne jamais s'en éloigner durablement."
+        }
+      ]
+    }
+  ],
+  "faire": [
+    "Toujours qualifier les parties, jamais de noms propres",
+    "Recopier l'attendu de principe entre guillemets s'il existe",
+    "Employer le vocabulaire procédural exact selon le degré de juridiction",
+    "Revenir au texte de la décision dans chaque sous-partie",
+    "Soigner les chapeaux annonçant chaque sous-partie et les transitions"
+  ],
+  "nePasFaire": [
+    "Transformer le commentaire en dissertation sur le thème de l'arrêt",
+    "Paraphraser la décision sans l'éclairer",
+    "Mélanger les prétentions des parties avec les motifs du juge",
+    "Utiliser un nom propre dans la formulation du problème juridique",
+    "Faire une conclusion générale qui reprend des éléments déjà traités",
+    "Garder la solution secrète jusqu'à la fin du devoir"
+  ]
+}

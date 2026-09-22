@@ -1,0 +1,117 @@
+{
+  "type": "COMMENTAIRE_ARTICLE",
+  "title": "Le commentaire d'article",
+  "subtitle": "Méthode, bonnes pratiques et erreurs à éviter",
+  "niveau": "Licence 1, 2, 3 — Droit sénégalais et OHADA",
+  "sections": [
+    {
+      "heading": "1. Objectif de l'exercice",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Commenter un article consiste à analyser, expliquer et apprécier une disposition normative — un article de loi, du COCC, d'un Acte uniforme OHADA ou de tout autre texte. C'est un exercice distinct des deux précédents : il ne s'agit pas de résoudre un cas concret comme dans un cas pratique, ni de formuler un problème juridique contentieux comme dans un commentaire d'arrêt. Tout doit être fait pour éviter de glisser vers l'un de ces deux autres exercices."
+        },
+        {
+          "type": "p",
+          "text": "Particularité importante : il n'y a pas de problématique dans un commentaire d'article, contrairement à la dissertation et au commentaire d'arrêt."
+        }
+      ]
+    },
+    {
+      "heading": "2. Ce qu'il faut savoir avant de commencer",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La glose consiste à définir un à un les termes de l'article, dans leur sens courant et dans leur sens juridique — les deux sens divergent souvent."
+        },
+        {
+          "type": "p",
+          "text": "L'analyse grammaticale est un outil pour construire le plan : repérer les propositions principales et subordonnées, les articles définis et indéfinis, le sens des conjonctions (« et » pour l'accumulation, « ou » pour l'alternative)."
+        },
+        {
+          "type": "p",
+          "text": "La structure logique correspond à la façon dont l'auteur du texte a raisonné : pose-t-il un principe, une exception, une liste, une condition ? Cette structure guide souvent directement le plan du commentaire."
+        }
+      ]
+    },
+    {
+      "heading": "3. Méthode, étape par étape",
+      "level": 1,
+      "blocks": []
+    },
+    {
+      "heading": "3.1 Identifier l'article",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "Préciser sa source : loi, décret, arrêté, Acte uniforme OHADA, etc.",
+            "Préciser sa date d'élaboration, et le cas échéant la date de sa modification ou de son ajout au texte.",
+            "Préciser son auteur (parlement pour une loi, chef de l'État pour un décret, Conseil des ministres de l'OHADA pour un Acte uniforme).",
+            "Préciser sa nature et sa valeur juridique, c'est-à-dire sa position dans la hiérarchie des normes."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3.2 Structurer et analyser",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "Compter et présenter le nombre d'alinéas qui composent l'article.",
+            "Dégager l'idée générale qui résume l'ensemble de l'article.",
+            "Faire la glose (définition terme à terme) et l'analyse grammaticale.",
+            "Identifier le problème que l'article résout — à ne pas confondre avec une problématique, absente de cet exercice."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3.3 Apprécier l'article",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "L'appréciation se structure en trois temps chronologiques :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Avant l'adoption — pourquoi cet article a-t-il été écrit ? Quel problème, quelle situation ont motivé son élaboration ?",
+            "Au moment de l'adoption — quelle solution apporte-t-il ? S'agit-il d'un nouveau principe, d'une précision, d'une exception ?",
+            "Après l'adoption — comment la jurisprudence et la doctrine l'ont-elles reçu ? Y a-t-il consensus ou controverse ? Quel est son avenir probable (abrogation, pérennité, réforme) ?"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "3.4 Construire le plan",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Le plan comporte deux parties et deux sous-parties, comme les autres exercices juridiques. Deux approches sont possibles : le plan linéaire, qui suit la structure grammaticale de l'article alinéa par alinéa, ou le plan synthétique, qui suit le regroupement des idées. Dans les deux cas, chaque sous-partie doit combiner analyse ET appréciation d'un même passage : il ne faut jamais consacrer une partie entière à l'identification et l'autre à l'appréciation."
+        }
+      ]
+    }
+  ],
+  "faire": [
+    "Définir chaque terme dans son sens courant et son sens juridique",
+    "Toujours revenir physiquement au texte de l'article commenté",
+    "Combiner analyse et appréciation dans chaque sous-partie",
+    "S'appuyer sur la structure grammaticale pour construire le plan"
+  ],
+  "nePasFaire": [
+    "Paraphraser l'article au lieu de l'expliquer",
+    "Dériver vers un cas pratique en cherchant une solution à un cas concret",
+    "Dériver vers un commentaire d'arrêt en formulant un problème juridique contentieux",
+    "Commenter la loi entière ou le chapitre au lieu du seul article demandé",
+    "Consacrer une partie entière à l'identification et l'autre à l'appréciation",
+    "Rédiger une conclusion"
+  ]
+}

@@ -8,6 +8,7 @@ import { InstallAppButton } from "@/components/install-app-button";
 const PUBLIC_LINKS = [
   { href: "/formation", label: "Formation" },
   { href: "/documentation", label: "Documentation" },
+  { href: "/methodologie", label: "Méthodologie" },
   { href: "/communaute", label: "Communauté" },
   { href: "/carrieres", label: "Carrières" },
   { href: "/tarifs", label: "Tarifs" },

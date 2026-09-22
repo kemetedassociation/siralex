@@ -1,0 +1,109 @@
+{
+  "type": "CAS_PRATIQUE",
+  "title": "Le cas pratique",
+  "subtitle": "Méthode, bonnes pratiques et erreurs à éviter",
+  "niveau": "Licence 1, 2, 3 — Droit sénégalais et OHADA",
+  "sections": [
+    {
+      "heading": "1. Objectif de l'exercice",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La résolution d'un cas pratique consiste à rechercher, à présenter et à résoudre les problèmes juridiques soulevés dans le cas exposé. Il s'agit, dans un premier temps, de traduire juridiquement des situations de fait, puis de donner un avis argumenté sur une question juridique."
+        }
+      ]
+    },
+    {
+      "heading": "2. Ce qu'il faut savoir avant de commencer",
+      "level": 1,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Un cas fermé pose des questions précises auxquelles il faut répondre une à une. Un cas ouvert se termine par une formule générale (« relevez les problèmes qui se posent ») : c'est alors à l'étudiant d'identifier lui-même tous les problèmes pertinents."
+        },
+        {
+          "type": "p",
+          "text": "Le syllogisme juridique est la méthode de raisonnement à utiliser : la Majeure est la règle de droit applicable, la Mineure est constituée des faits constatés et qualifiés, la Conclusion est la confrontation de la Majeure et de la Mineure qui permet de donner la solution."
+        }
+      ]
+    },
+    {
+      "heading": "3. Méthode, étape par étape",
+      "level": 1,
+      "blocks": []
+    },
+    {
+      "heading": "3.1 Analyser la situation et identifier les faits",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Il faut repérer les informations importantes qui permettent de comprendre ce qui s'est passé et ce qui pose problème. On résume, de manière neutre et dans l'ordre chronologique, les informations nécessaires à la compréhension de la situation — sans détails superflus, mais sans rien omettre qui puisse peser sur la solution."
+        }
+      ]
+    },
+    {
+      "heading": "3.2 Qualifier les faits juridiquement",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "La qualification juridique consiste à donner aux faits concernés la traduction juridique qui leur convient et qui doit permettre l'application de la règle de droit. Un étudiant de 17 ans devient « un mineur », une personne ayant acheté un bien à un professionnel devient « un consommateur » : cette qualification conditionne directement quelle règle de droit pourra s'appliquer."
+        }
+      ]
+    },
+    {
+      "heading": "3.3 Identifier le problème juridique",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Il faut identifier le problème de droit — la question juridique — soulevé par la situation. Il se présente de manière générale et abstraite, sans référence concrète à la situation étudiée (donc sans nom propre), éventuellement sous une forme interrogative."
+        }
+      ]
+    },
+    {
+      "heading": "3.4 Déterminer la ou les règles de droit applicables",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "De la qualification juridique des faits résultent les règles de droit qui paraissent les plus adaptées à la résolution du cas. Il faut énoncer de manière générale la ou les règles de droit qui doivent être appliquées à la situation, afin de pouvoir ensuite proposer une solution. Il sera fait appel au cours et, éventuellement, aux connaissances personnelles."
+        }
+      ]
+    },
+    {
+      "heading": "3.5 Proposer une solution argumentée",
+      "level": 2,
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Cette phase tire les conséquences de l'analyse précédente : il s'agit d'appliquer concrètement les règles de droit aux faits et de proposer une solution argumentée et concrète, justifiée par l'application de la règle aux événements — avec, le cas échéant, une alternative."
+        },
+        {
+          "type": "p",
+          "text": "Lorsque plusieurs solutions sont possibles, le choix de l'une d'elles doit être justifié. La solution n'est fondée que s'il est démontré que, dans le cas d'espèce, les conditions d'application de la règle sont réunies."
+        },
+        {
+          "type": "p",
+          "text": "C'est ici que se déploie le syllogisme juridique : la Majeure énonce la règle de droit applicable ; la Mineure rappelle les faits constatés et qualifiés ; la Conclusion confronte les deux pour donner la solution."
+        }
+      ]
+    }
+  ],
+  "faire": [
+    "Résumer les faits de manière neutre et chronologique",
+    "Qualifier systématiquement chaque personne et chaque situation",
+    "Formuler le problème juridique de manière générale et abstraite",
+    "Justifier le choix d'une solution lorsque plusieurs sont possibles",
+    "Vérifier que toutes les conditions de la règle sont réunies avant de conclure"
+  ],
+  "nePasFaire": [
+    "Mélanger faits utiles et détails superflus dans le résumé",
+    "Utiliser un nom propre dans la formulation du problème juridique",
+    "Énoncer la règle de droit sans l'avoir reliée à la qualification des faits",
+    "Affirmer une solution sans démontrer que ses conditions sont réunies",
+    "Traiter plusieurs questions d'un cas fermé de manière confuse plutôt qu'une à une"
+  ]
+}

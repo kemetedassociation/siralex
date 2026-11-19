@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { NIVEAU_LABELS, PROGRESS_LABELS } from "@/lib/labels";
-import { PLANS, type FormuleKey } from "@/lib/access";
+import { PLANS, trialDaysLeft, trialEndDate, type FormuleKey } from "@/lib/access";
 
 export default async function TableauDeBordPage() {
   const user = await requireUser();
@@ -35,13 +35,28 @@ export default async function TableauDeBordPage() {
   ]);
 
   const plan = (subscription?.plan ?? "GRATUITE") as FormuleKey;
+  const trialEnd = trialEndDate(subscription);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <h1 className="font-serif text-3xl font-semibold text-brand-dark">Bonjour {user.name}</h1>
       <p className="mt-1 text-foreground/60">
-        {user.niveau && `${NIVEAU_LABELS[user.niveau]} · `}Formule {PLANS[plan].label}
+        {user.niveau && `${NIVEAU_LABELS[user.niveau]} · `}
+        {trialEnd ? "Essai gratuit — accès intégral" : `Formule ${PLANS[plan].label}`}
       </p>
+
+      {trialEnd && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm">
+          <p className="text-brand-dark">
+            Votre essai gratuit se termine dans{" "}
+            <span className="font-semibold">{trialDaysLeft(trialEnd)} jour{trialDaysLeft(trialEnd) > 1 ? "s" : ""}</span>{" "}
+            (le {trialEnd.toLocaleDateString("fr-FR")}). Tous les cours et contenus sont débloqués d&apos;ici là.
+          </p>
+          <Link href="/abonnement" className="rounded bg-brand px-3 py-1.5 font-medium text-white hover:bg-brand-dark">
+            Choisir une formule
+          </Link>
+        </div>
+      )}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section className="rounded-lg border border-black/10 bg-white p-5">

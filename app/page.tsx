@@ -49,7 +49,7 @@ export default function Home() {
               href="/inscription"
               className="rounded bg-gold px-5 py-2.5 font-medium text-brand-dark hover:-translate-y-0.5 hover:brightness-95"
             >
-              Créer un compte
+              Essai gratuit 14 jours
             </Link>
             <Link
               href="/tarifs"

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
-import { PLANS, type FormuleKey } from "@/lib/access";
+import { PLANS, TRIAL_DAYS, trialDaysLeft, trialEndDate, type FormuleKey } from "@/lib/access";
 import { PaymentForm } from "@/components/payment-form";
 
 export default async function AbonnementPage() {
@@ -14,6 +14,7 @@ export default async function AbonnementPage() {
   });
 
   const plan = subscription.plan as FormuleKey;
+  const trialEnd = trialEndDate(subscription);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -31,6 +32,14 @@ export default async function AbonnementPage() {
             <span className="text-red-600">Suspendu — paiement requis</span>
           )}
         </p>
+        {trialEnd && (
+          <p className="mt-2 rounded bg-gold/10 px-3 py-2 text-brand-dark">
+            Essai gratuit de {TRIAL_DAYS} jours en cours : accès intégral (formule Professionnel) jusqu&apos;au{" "}
+            {trialEnd.toLocaleDateString("fr-FR")}, soit encore {trialDaysLeft(trialEnd)} jour
+            {trialDaysLeft(trialEnd) > 1 ? "s" : ""}. Sans paiement de votre part, votre compte repassera
+            ensuite automatiquement en formule Gratuite.
+          </p>
+        )}
         {subscription.renewsAt && (
           <p className="mt-1 text-foreground/60">
             Prochain renouvellement : {subscription.renewsAt.toLocaleDateString("fr-FR")}

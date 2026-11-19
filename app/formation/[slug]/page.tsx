@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { NIVEAU_LABELS, PROGRESS_LABELS } from "@/lib/labels";
-import { canAccessCourse, PLANS, type FormuleKey } from "@/lib/access";
+import { canAccessCourse, effectivePlan, PLANS, type FormuleKey } from "@/lib/access";
 import { markCourseCompleted } from "@/lib/actions/progress";
 
 export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -20,7 +20,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
   if (session?.user) {
     const sub = await prisma.subscription.findUnique({ where: { userId: session.user.id } });
-    if (sub) plan = sub.plan as FormuleKey;
+    plan = effectivePlan(sub);
 
     progress = await prisma.courseProgress.findUnique({
       where: { userId_courseId: { userId: session.user.id, courseId: course.id } },

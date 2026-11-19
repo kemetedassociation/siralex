@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PLANS } from "@/lib/access";
+import { PLANS, TRIAL_DAYS } from "@/lib/access";
 import { getSession } from "@/lib/session";
 
 export default async function TarifsPage() {
@@ -10,6 +10,24 @@ export default async function TarifsPage() {
     <div className="mx-auto max-w-5xl px-4 py-14">
       <h1 className="font-serif text-3xl font-semibold text-brand-dark">Formules et tarifs</h1>
       <p className="mt-1 text-foreground/60">Passez à une formule supérieure à tout moment.</p>
+
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gold/40 bg-gold/10 p-5">
+        <div>
+          <h2 className="font-semibold text-brand-dark">Essai gratuit de {TRIAL_DAYS} jours</h2>
+          <p className="mt-1 text-sm text-foreground/70">
+            Chaque nouveau compte profite de l&apos;accès intégral (formule Professionnel) pendant deux
+            semaines, sans paiement ni engagement.
+          </p>
+        </div>
+        {!session?.user && (
+          <Link
+            href="/inscription"
+            className="rounded bg-gold px-4 py-2 text-sm font-medium text-brand-dark hover:brightness-95"
+          >
+            Commencer l&apos;essai
+          </Link>
+        )}
+      </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {(Object.entries(PLANS) as [string, (typeof PLANS)[keyof typeof PLANS]][])

@@ -22,6 +22,10 @@ export default function InscriptionPage() {
       <p className="mt-1 text-sm text-foreground/60">
         Choisissez votre profil pour accéder aux contenus adaptés.
       </p>
+      <p className="mt-3 rounded border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-brand-dark">
+        <span className="font-semibold">14 jours d&apos;essai gratuit</span> : accès intégral à tous les
+        cours, examens et à la bibliothèque, sans moyen de paiement.
+      </p>
 
       <form action={formAction} className="mt-6 space-y-4">
         <div className="grid grid-cols-3 gap-2">

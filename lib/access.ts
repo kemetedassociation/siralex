@@ -53,3 +53,26 @@ export function canAccessCourse(plan: FormuleKey, niveau: Niveau): boolean {
   if (allowed === "ALL") return true;
   return allowed.includes(niveau);
 }
+
+// Essai gratuit : pendant les 14 jours qui suivent l'inscription, un compte
+// en formule Gratuite bénéficie de l'accès intégral (formule Professionnel).
+export const TRIAL_DAYS = 14;
+
+type SubscriptionLike = { plan: string; startedAt: Date } | null | undefined;
+
+export function trialEndDate(sub: SubscriptionLike): Date | null {
+  if (!sub || sub.plan !== "GRATUITE") return null;
+  const end = new Date(sub.startedAt);
+  end.setDate(end.getDate() + TRIAL_DAYS);
+  return end > new Date() ? end : null;
+}
+
+export function trialDaysLeft(end: Date): number {
+  return Math.max(1, Math.ceil((end.getTime() - Date.now()) / 86_400_000));
+}
+
+/** Formule réellement appliquée pour l'accès aux contenus (essai inclus). */
+export function effectivePlan(sub: SubscriptionLike): FormuleKey {
+  if (trialEndDate(sub)) return "PROFESSIONNEL";
+  return (sub?.plan ?? "GRATUITE") as FormuleKey;
+}

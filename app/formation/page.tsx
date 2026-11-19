@@ -2,7 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { NIVEAU_LABELS, PROGRESS_LABELS } from "@/lib/labels";
-import { canAccessCourse, type FormuleKey } from "@/lib/access";
+import { PROGRAMMES } from "@/lib/programmes";
+import { canAccessCourse, effectivePlan, type FormuleKey } from "@/lib/access";
 
 export default async function FormationPage({
   searchParams,
@@ -41,7 +42,7 @@ export default async function FormationPage({
   let plan: FormuleKey = "GRATUITE";
   if (session?.user) {
     const sub = await prisma.subscription.findUnique({ where: { userId: session.user.id } });
-    if (sub) plan = sub.plan as FormuleKey;
+    plan = effectivePlan(sub);
   }
 
   return (
@@ -50,6 +51,17 @@ export default async function FormationPage({
       <p className="mt-1 text-foreground/60">
         Cours validés par le comité scientifique, classés par niveau, matière et filière.
       </p>
+      <div className="mt-4 flex flex-wrap gap-2 text-sm">
+        {PROGRAMMES.map((p) => (
+          <Link
+            key={p.slug}
+            href={`/formation/programmes/${p.slug}`}
+            className="rounded border border-gold/50 bg-gold/10 px-3 py-1.5 font-medium text-brand-dark hover:bg-gold/20"
+          >
+            Programme {p.niveau} par modules →
+          </Link>
+        ))}
+      </div>
 
       <form className="mt-6 flex flex-wrap gap-3 text-sm">
         <input
